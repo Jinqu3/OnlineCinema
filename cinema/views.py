@@ -18,5 +18,6 @@ class ActorView(View):
 class MovieDetail(View):
 
     def get(self,request,pk):
-        movie = Film.objects.prefetch_related('').get(id=pk)
-        return render(request,"movie/movie_single.html",{"movie":movie})
+        movie = Film.objects.get(id=pk)
+        actors = Member.objects.all()
+        return render(request,"movies/movie_single.html",{"movie":movie,"actors":actors})
