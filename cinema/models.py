@@ -1,9 +1,10 @@
 from django.db import models
 from datetime import datetime
+from django.urls import reverse
 
 """
 Пользователь
-"""
+""" 
 class Role(models.Model):
     name = models.CharField(max_length=20)
 
@@ -34,6 +35,10 @@ class User(models.Model):
     email = models.CharField(max_length=256)
     photo = models.ImageField(upload_to="users/")
 
+    roles = models.ManyToManyField("Role")
+    views = models.ManyToManyField("Film",related_name="viewed")
+    favorite = models.ManyToManyField("Film",related_name="favorite")
+    scores = models.ManyToManyField("Film",through="Score",related_name="scores")
 
     def __str__(self):
         return self.name+self.surname
@@ -45,9 +50,6 @@ class User(models.Model):
 
         managed = True
         db_table = '_user'
-
-
-
 
 """
 Категория
@@ -143,7 +145,7 @@ class Photo(models.Model):
     name = models.CharField(max_length=40)
     film_id = models.ForeignKey("Film",on_delete=models.CASCADE,null=True)
     description = models.TextField(blank=True, null=True)
-    image = models.ImageField(upload_to="photo/",null=True)
+    image = models.ImageField(upload_to=f"photo/",null=True)
 
     class Meta:
 
@@ -170,13 +172,23 @@ class Film(models.Model):
     release_date_russia = models.DateField(blank=True, null=True)
     budjet = models.IntegerField(blank=True, null=True)
     gross = models.IntegerField(blank=True, null=True)
-    duration = models.DateTimeField(blank=True, null=True)
+    duration = models.CharField(max_length=3,blank=True, null=True)
     rating = models.CharField(max_length=3,blank=True, null=True)
     mpaa_rating = models.CharField(max_length=5, blank=True, null=True)
     trailer_url = models.CharField(max_length=256, blank=True, null=True)
-    url = models.CharField(max_length=256, blank=True, null=True)
+    url = models.SlugField(max_length=256,unique=True, blank=True, null=True)
+
+    countries = models.ManyToManyField("Country",related_name="film_countries")
+    genres = models.ManyToManyField("Genre",related_name="film_genres")
+    categories = models.ManyToManyField("Category",related_name="film_categories")
+    members = models.ManyToManyField("Member",through="FilmMemberPost",related_name="film_members")
+    members_posts = models.ManyToManyField("Post",through="FilmMemberPost",related_name="film_member_posts")
+
     def __str__(self):
         return self.name
+    
+    def get_absolute_url(self):
+        return reverse("movie_detail", kwargs = {"slug":self.url})
 
     class Meta:
 
@@ -186,49 +198,15 @@ class Film(models.Model):
         managed = True
         db_table = 'film'
 
-"""
-Связи многие ко многим
-"""
-class UserRole(models.Model):
-    user = models.ForeignKey(User,on_delete= models.CASCADE) 
-    role = models.ForeignKey(Role, on_delete= models.CASCADE)
+class FilmMemberPost(models.Model):
+    film = models.ForeignKey('Film', on_delete= models.CASCADE)  
+    member = models.ForeignKey('Member',on_delete= models.CASCADE)
+    post = models.ForeignKey('Post', on_delete= models.CASCADE)
 
     class Meta:
         managed = True
-        db_table = 'user_role'
-        unique_together = (('user', 'role'),)
-
-
-class FilmCategory(models.Model):
-    film = models.ForeignKey("Film", on_delete= models.CASCADE)  
-    category = models.ForeignKey("Category", on_delete= models.CASCADE)
-
-    class Meta:
-        managed = True
-        db_table = 'film_category'
-        unique_together = (('film', 'category'),)
-
-
-class FilmCountry(models.Model):
-    film = models.ForeignKey("Film", on_delete= models.CASCADE)  
-    country = models.ForeignKey("Country", on_delete= models.CASCADE)
-
-    class Meta:
-        managed = True
-        db_table = 'film_country'
-        unique_together = (('film', 'country'),)
-
-
-class FilmGenre(models.Model):
-    film = models.ForeignKey("Film", on_delete= models.CASCADE) 
-    genre = models.ForeignKey('Genre', on_delete= models.CASCADE)
-
-    class Meta:
-        managed = True
-        db_table = 'film_genre'
-        unique_together = (('film', 'genre'),)
-
-
+        db_table = 'film_member_post'
+        unique_together = (('film', 'member', 'post'),)
 
 """
 Должность участника съёмочной группы
@@ -245,42 +223,6 @@ class Post(models.Model):
 
         managed = True
         db_table = 'post'   
-
-"""Вообще"""
-class MemberPost(models.Model):
-    member = models.ForeignKey("Member", on_delete= models.CASCADE)
-    post = models.ForeignKey('Post', on_delete= models.CASCADE)
-
-    class Meta:
-        managed = True
-        db_table = 'member_post'
-        unique_together = (('member', 'post'),)
-
-"""В фильме"""
-class FilmMemberPost(models.Model):
-    film = models.ForeignKey(Film, on_delete= models.CASCADE)  
-    member = models.ForeignKey('Member',on_delete= models.CASCADE)
-    post = models.ForeignKey('Post', on_delete= models.CASCADE)
-
-    class Meta:
-        managed = True
-        db_table = 'film_member_post'
-        unique_together = (('film', 'member', 'post'),)
-
-"""
-Избранное
-"""
-class Favorite(models.Model):
-    film = models.ForeignKey('Film', on_delete= models.CASCADE)  
-    user = models.ForeignKey("User", on_delete= models.CASCADE)
-
-    class Meta:
-
-        verbose_name = "Любимое"
-
-        managed = True
-        db_table = 'favorite'
-        unique_together = (('film', 'user'),)
 
 """
 Отзыв
@@ -316,18 +258,4 @@ class Score(models.Model):
 
         managed = True
         db_table = 'score'
-        unique_together = (('film', 'user'),)
-
-"""
-Просмотренное
-"""
-class Viewed(models.Model):
-    film = models.ForeignKey("Film", on_delete= models.CASCADE)
-    user = models.ForeignKey("User",on_delete= models.CASCADE)
-
-    class Meta:
-        verbose_name = "Просмотренное" 
-        
-        managed = True
-        db_table = 'viewed'
         unique_together = (('film', 'user'),)

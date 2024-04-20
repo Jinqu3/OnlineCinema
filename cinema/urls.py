@@ -19,6 +19,6 @@ from django.urls import path
 
 urlpatterns = [
     path('', views.MovieView.as_view()),
-    path("<int:pk>/",views.MovieDetail.as_view()),  
+    path("<slug:slug>/",views.MovieDetail.as_view(),name = "movie_detail"),  
 ]
 
