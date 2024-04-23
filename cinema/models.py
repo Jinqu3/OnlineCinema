@@ -2,6 +2,7 @@ from django.db import models
 from datetime import datetime
 from django.urls import reverse
 
+from django_ckeditor_5.fields import CKEditor5Field
 """
 Пользователь
 """ 
@@ -120,7 +121,7 @@ class Member(models.Model):
     name = models.CharField(max_length=20)
     surname = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30,blank=True)
-    description = models.TextField(max_length=1000,blank=True, null=True)
+    description = CKEditor5Field(max_length=1000,blank=True, null=True,config_name='extends')
     date_of_birth = models.DateField()
     gender = models.CharField(max_length=1,choices=GENDERS)
     photo = models.ImageField(upload_to="members/",null=True)
@@ -165,7 +166,7 @@ class Film(models.Model):
 
     name = models.CharField(max_length=130,unique=True)
     slogan = models.CharField(max_length=50, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
+    description = CKEditor5Field(blank=True, null=True,config_name='extends')
     poster = models.ImageField(upload_to="films/",null=True)
     year = models.IntegerField(choices=YEAR_CHOICES, default=datetime.now().year)
     release_date_world = models.DateField(blank=True, null=True)

@@ -2,19 +2,10 @@ from django.contrib import admin
 
 from .models import Film,Genre,Category,Country,Photo,Member,FilmMemberPost,Review,Score,User,Post
 
-from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
 from django import forms
 
 from django.utils.safestring import mark_safe
-
-
-class FilmAdminForm(forms.ModelForm):
-    description = forms.CharField(label="Описание",widget = CKEditorUploadingWidget())
-
-    class Meta:
-        model = Film
-        fields = '__all__'
 
 
 class FilmMemberPostInline(admin.TabularInline):
@@ -65,11 +56,9 @@ class FilmAdmin(admin.ModelAdmin):
     """Фильмы"""
     list_display = ("name",)
     list_filter = ("year",)
-    search_fields = ("title", "category__name")
     inlines = [MovieShotsInline, ReviewInline,FilmMemberPostInline]
     save_on_top = True
     save_as = True
-    form = FilmAdminForm
     readonly_fields = ("get_image",)
 
     def get_image(self, obj):
