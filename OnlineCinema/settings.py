@@ -32,16 +32,20 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'modeltranslation',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sites',
     'django.contrib.staticfiles',
     'debug_toolbar',
     'django_ckeditor_5',
     'ckeditor_uploader',
     'cinema',
+    'allauth',
+    'allauth.account'
 ]
 
 MIDDLEWARE = [
@@ -49,6 +53,8 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -90,7 +96,10 @@ DATABASES = {
     }
 }
 
-
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -121,14 +130,20 @@ USE_I18N = True
 
 USE_TZ = True
 
+gettext = lambda s:s
+LANGUAGES = [
+    ('ru',gettext('Russia')),
+    ('en',gettext('English')),
+]
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
 STATIC_DIR = os.path.join(BASE_DIR,'static')
-STATICFILES_DIR = [STATIC_DIR]
-STATIC_ROOT = os.path.join(BASE_DIR,'static')
+STATICFILES_DIRS = [STATIC_DIR,]
+# STATIC_ROOT = os.path.join(BASE_DIR,'static')
 
 
 # Default primary key field type
@@ -142,6 +157,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
+
+SITE_ID = 1
 
 CKEDITOR_BASEPATH = "/my_static/ckeditor/ckeditor/"
 CKEDITOR_UPLOAD_PATH = "uploads/"

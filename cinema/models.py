@@ -19,8 +19,8 @@ class Role(models.Model):
         
 class User(models.Model):
 
-    MALE = 'M'
-    FEMALE = 'F'
+    MALE = 'Mужчина'
+    FEMALE = 'Женщина'
     GENDERS = [
         (MALE,'Мужчина'),
         (FEMALE,'Женщина')
@@ -30,7 +30,7 @@ class User(models.Model):
     surname = models.CharField(max_length=30)
     lastname = models.CharField(max_length=30, blank=True, null=True)
     date_of_birth = models.DateField()
-    gender = models.CharField(max_length=1,choices=GENDERS)
+    gender = models.CharField(max_length=7,choices=GENDERS)
     login = models.CharField(max_length=30)
     password = models.CharField(max_length=100)
     email = models.CharField(max_length=256)
@@ -111,8 +111,8 @@ class Genre(models.Model):
 Съёмочная группа
 """
 class Member(models.Model):
-    MALE = 'M'
-    FEMALE = 'F'
+    MALE = 'Mужчина'
+    FEMALE = 'Женщина'
     GENDERS = [
         (MALE,'Мужчина'),
         (FEMALE,'Женщина')
@@ -120,14 +120,20 @@ class Member(models.Model):
 
     name = models.CharField(max_length=20)
     surname = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30,blank=True)
+    lastname = models.CharField(max_length=30,blank=True)
     description = CKEditor5Field(max_length=1000,blank=True, null=True,config_name='extends')
     date_of_birth = models.DateField()
-    gender = models.CharField(max_length=1,choices=GENDERS)
+    gender = models.CharField(max_length=7,choices=GENDERS)
     photo = models.ImageField(upload_to="members/",null=True)
+    url = models.SlugField(max_length=256,unique=True, blank=False, null=True)
+
+    members_posts = models.ManyToManyField("Post",through="FilmMemberPost",related_name="posts")
 
     def __str__(self):
-        return self.name + " " + self.surname + " " +self.last_name
+        return self.name + " " + self.surname + " " +self.lastname
+    
+    def get_absolute_url(self):
+        return reverse("member_detail", kwargs = {"slug":self.url})
 
 
     class Meta:
@@ -177,7 +183,7 @@ class Film(models.Model):
     rating = models.CharField(max_length=3,blank=True, null=True)
     mpaa_rating = models.CharField(max_length=5, blank=True, null=True)
     trailer_url = models.CharField(max_length=256, blank=True, null=True)
-    url = models.SlugField(max_length=256,unique=True, blank=True, null=True)
+    url = models.SlugField(max_length=256,unique=True, blank=False, null=True)
 
     countries = models.ManyToManyField("Country",related_name="film_countries")
     genres = models.ManyToManyField("Genre",related_name="film_genres")
@@ -189,7 +195,7 @@ class Film(models.Model):
         return self.name
     
     def get_absolute_url(self):
-        return reverse("movie_detail", kwargs = {"slug":self.url})
+        return reverse("film_detail", kwargs = {"slug":self.url})
 
     class Meta:
 
@@ -246,15 +252,27 @@ class Review(models.Model):
 """
 Оценка
 """
+
+class ScoreStar(models.Model):
+
+    STARS = [(i,i) for i in range(1,11)]
+
+    value = models.IntegerField(choices=STARS,default=0)
+
+    class Meta:
+        verbose_name = "Звезда оценки"
+        verbose_name_plural = "Звезды"
+        ordering = ["-value"]
+
 class Score(models.Model):
     film = models.ForeignKey("Film", on_delete= models.CASCADE)
     user = models.ForeignKey("User",on_delete= models.CASCADE)
-    star = models.DecimalField(max_digits=2, decimal_places=0)
+    star = models.ForeignKey("ScoreStar",on_delete= models.CASCADE)
     
 
     class Meta:
 
-        verbose_name = "Оцененка"
+        verbose_name = "Оценка"
         verbose_name_plural = "Оценки"
 
         managed = True

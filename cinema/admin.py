@@ -1,16 +1,12 @@
 from django.contrib import admin
 
 from .models import Film,Genre,Category,Country,Photo,Member,FilmMemberPost,Review,Score,User,Post
-
-
+from modeltranslation.admin import TranslationAdmin
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django import forms
 
 from django.utils.safestring import mark_safe
 
-
-class FilmMemberPostInline(admin.TabularInline):
-    model = FilmMemberPost
-    extra = 1
 
 class FilmUserReviewInline(admin.TabularInline):
     model = Review
@@ -28,14 +24,60 @@ class FilmUserAdmin(admin.ModelAdmin):
     ]
 
 admin.register(User,FilmUserAdmin)
-admin.site.register(Genre)
-admin.site.register(Category)
-admin.site.register(Country)
-admin.site.register(Photo)
-admin.site.register(Member)
-admin.site.register(Post)
-admin.site.register(Review)
 
+
+@admin.register(Post)
+class ReviewAdmin(TranslationAdmin):
+    """Отзывы к фильму"""
+    list_display = ("name",)
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    """Отзывы к фильму"""
+    list_display = ("film", "user")
+
+@admin.register(Country)
+class GenreAdmin(TranslationAdmin):
+    """Жанры"""
+    list_display = ("name",)
+
+@admin.register(Category)
+class CategoryAdmin(TranslationAdmin):
+    """Категории"""
+    list_display = ("name", "description")
+    list_display_links = ("name",)
+
+@admin.register(Genre)
+class GenreAdmin(TranslationAdmin):
+    """Жанры"""
+    list_display = ("name", "description")
+    list_display_links = ("name",)
+
+@admin.register(Score)
+class RatingAdmin(admin.ModelAdmin):
+    """Рейтинг"""
+    list_display = ("user", "film", "star")
+
+@admin.register(Member)
+class MemberAdmin(TranslationAdmin):
+    list_display = ("name","surname","lastname", "date_of_birth", "get_image")
+    readonly_fields = ("get_image",)
+
+    def get_image(self, obj):
+        return mark_safe(f'<img src={obj.photo.url} width="50" height="60"')
+
+    get_image.short_description = "Изображение"
+
+@admin.register(Photo)
+class MovieShotsAdmin(TranslationAdmin):
+    """Кадры из фильма"""
+    list_display = ("name", "film_id", "get_image")
+    readonly_fields = ("get_image",)
+
+    def get_image(self, obj):
+        return mark_safe(f'<img src={obj.image.url} width="50" height="60"')
+
+    get_image.short_description = "Изображение"
 
 class ReviewInline(admin.TabularInline):
     """Отзывы на странице фильма"""
@@ -51,8 +93,12 @@ class MovieShotsInline(admin.TabularInline):
 
     get_image.short_description = "Изображение"
 
+class FilmMemberPostInline(admin.TabularInline):
+    model = FilmMemberPost
+    extra = 1
+
 @admin.register(Film)
-class FilmAdmin(admin.ModelAdmin):
+class FilmAdmin(TranslationAdmin):
     """Фильмы"""
     list_display = ("name",)
     list_filter = ("year",)

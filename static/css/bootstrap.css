@@ -4,7 +4,7 @@
  * Copyright 2011-2018 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
-:root {
+ :root {
   --blue: #007bff;
   --indigo: #6610f2;
   --purple: #6f42c1;
@@ -481,12 +481,10 @@ mark,
   max-width: 100%;
   height: auto;
 }
-
 .img-movie-shots {
-  max-width: 30%;
+  max-width: 250px;
   height: auto;
 }
-
 .img-thumbnail {
   padding: 0.25rem;
   background-color: #fff;

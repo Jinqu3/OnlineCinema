@@ -1,0 +1,189 @@
+{% extends 'films/base.html' %}
+{% block title %} {{ film.name }} {% endblock title %}
+{% block container %}
+    <div class="container py-md-3">
+{% endblock container %}
+
+
+{% block film %}
+    <div class="left-ads-display col-lg-8">
+        <div class="row">
+            <div class="desc1-left col-md-6">
+                <img src="{{ film.poster.url }}" class="img-fluid" alt="">
+            </div>
+            <div class="desc1-right col-md-6 pl-lg-4">
+                <h3 class="editContent" style="outline: none; cursor: inherit;">
+                    {{ film.name }}
+                </h3>
+                <h5 class="editContent"></h5>
+                <ul>
+                    <li style="list-style: none">
+                        <span><b>Год:</b> {{ film.year }}</span></li>
+                    <li style="list-style: none">
+                        <span><b>Страна:</b> 
+                            {% for country in film.countries.all %}
+                                {{ country.name }}
+                            {% endfor %}
+                        </span>
+                    </li>
+                    <li style="list-style: none">
+                        <span><b>Слоган:</b> {{ film.slogan }}</span>
+                    </li>
+                    <li style="list-style: none">
+                                    <span><b>Режиссер:</b>
+                                        
+                                    </span>
+                    </li>
+                    <li style="list-style: none">
+                        <span><b>Актеры:</b>
+                            {% for member in film.members.all %}
+                                <a href = "{{member.get_absolute_url}}"> 
+                                {{ member.name}} {{ member.surname}} {{ member.last_name}}
+                                </a>
+                            {% endfor %}
+                        </span>
+                    </li>
+                    <li style="list-style: none">
+                        <span><b>Жанр:</b>
+                        {% for genre in film.genres.all %}
+                            {{ genre.name }}
+                        {% endfor %}
+                        </span>
+                    </li>
+                    <li style="list-style: none">
+                        <span><b>Премьера в мире: </b> {{ film.release_date_world }}</span>
+                    </li>
+                    <li style="list-style: none">
+                        <span><b>Премьера в России: </b> {{ film.release_date_russia }}</span>
+                    </li>
+                    <li style="list-style: none">
+                        <span><b>Бюджет: </b> {{ film.budjet }} $</span>
+                    </li>
+                    <li style="list-style: none">
+                        <span><b>Сборы: </b> {{ film.gross }} $</span>
+                    </li>
+                    <li>
+                        <form action="{% url 'add_rating' %}" method="post" name="rating">
+                            <b>Рейтинг:</b>
+                            {% csrf_token %}
+                            <input type="hidden" value="{{ film.id }}" name="film">
+                            <span class="rating">
+                                {% for k, v in star_form.fields.star.choices %}
+                                    <input id="rating{{ v }}" type="radio" name="star"
+                                           value="{{ k }}">
+                                    <label for="rating{{ v }}">{{ k }}</label>
+                                {% endfor %}
+                            </span>
+                            <span class="editContent">4.0</span>
+                        </form>
+                    </li>
+                        <a href="#"><b>Рейтинг:</b>
+                            <span class="fa fa-star" aria-hidden="true"
+                                  style="outline: none; cursor: inherit;"></span>
+                            <span class="fa fa-star" aria-hidden="true"
+                                  style="outline: none; cursor: inherit;"></span>
+                            <span class="fa fa-star" aria-hidden="true"
+                                  style="outline: none; cursor: inherit;"></span>
+                            <span class="fa fa-star" aria-hidden="true"
+                                  style="outline: none; cursor: inherit;"></span>
+                            <span class="fa fa-star" aria-hidden="true"
+                                  style="outline: none; cursor: inherit;"></span>
+                            <span class="editContent"
+                                  style="outline: none; cursor: inherit;">5.0</span>
+                        </a>
+                    </li> -->
+            </div>
+        </div>
+        <div class="row sub-para-w3layouts mt-5">
+
+            <h3 class="shop-sing editContent" style="outline: none; cursor: inherit;">
+                О фильме {{ film.name }}
+            </h3>
+            <p>
+                {% for image in film.photo_set.all %}
+                    <img src="{{image.image.url}}" class="img-film-shots" alt="{{image.description}}">
+                {% endfor %}
+            </p>
+            <!-- <p class="editContent" style="outline: none; cursor: inherit;"> -->
+                {{ film.description }}
+            <!-- </p> -->
+            <p class="mt-3 italic-blue editContent"
+               style="outline: none; cursor: inherit;">
+                <iframe width="560" height="315"
+                        src="{{film.trailer_url.url}}"
+                        frameborder="0" allow="accelerometer; autoplay;encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                </iframe>
+            </p>
+        </div>  
+        <hr>
+        
+<div class="row">
+    <div class="single-form-left">
+        <div class="contact-single">
+            <h3 class="editContent" style="outline: none; cursor: inherit;">
+                <span class="sub-tittle editContent"
+                    style="outline: none; cursor: inherit;">
+                </span>Оставить отзыв
+            </h3>
+            <form action="{% url 'add_review' film.id %}" method="post" class="mt-4">
+                {% csrf_token %}
+                <div class="form-group editContent"
+                    <label for="contactcomment" class="editContent"
+                        Ваш комментарий *
+                    </label>
+                    <textarea class="form-control border" rows="5" name="text"
+                              id="contactcomment" required=""></textarea>
+                </div>
+                <div class="d-sm-flex">
+                </div>
+                <button type="submit"
+                        class="mt-3 btn btn-success btn-block py-3"
+                        style="outline: none; cursor: inherit;">
+                        Отправить
+                </button>
+            </form>
+        </div>
+    </div>
+    {% for review in film.get_review %}
+        <div class="media py-5">
+            <img src="bundles/images/te2.jpg" class="mr-3 img-fluid" alt="image"
+                style="outline: none; cursor: inherit;">
+            <div class="media-body mt-4">
+                <h5 class="mt-0 editContent"
+                    style="outline: none; cursor: inherit;">
+                    {{review.user_id}}
+                </h5>
+                <!-- <p class="mt-2 editContent" style="outline: none; cursor: inherit;"> -->
+                    <!-- Cras sit amet nibh libero, in gravida nulla. Nulla vel metus
+                    scelerisque ante sollicitudin. Cras purus odio, vestibulum in
+                    vulputate at, tempus viverra turpis.
+                </p>
+                <div class="media mt-5 editContent"
+                    style="outline: none; cursor: inherit;">
+                    <a class="pr-3" href="#">
+                        <img src="bundles/images/te1.jpg" class="img-fluid "
+                            alt="image" style="outline: none; cursor: inherit;">
+                    </a>
+                    <div class="media-body">
+                        <h5 class="mt-0 editContent"
+                            style="outline: none; cursor: inherit;">Leia Organa</h5>
+                        <p class="mt-2 editContent"
+                        style="outline: none; cursor: inherit;"> Cras sit amet
+                            nibh libero, in gravida nulla. Nulla vel metus
+                            scelerisque ante sollicitudin. Cras purus odio,
+                            vestibulum in vulputate at, tempus viverra turpis. Fusce
+                            condimentum nunc ac nisi vulputate fringilla..</p>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    {% endfor %}    
+    </div>
+    <div class="grid-img-right mt-4 text-right bg bg1" >
+        {% include 'include/pagination.html' %}
+    </div>
+</div>
+    </div>
+{% endblock film %}
+

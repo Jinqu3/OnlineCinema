@@ -18,8 +18,10 @@ from . import views
 from django.urls import path
 
 urlpatterns = [
-    path('', views.MovieView.as_view()),
-    path("<slug:slug>/",views.MovieDetail.as_view(),name = "movie_detail"),  
-    path("<int:pk>/",views.AddReview.as_view(),name = "add_review"),  
+    path("", views.MovieView.as_view()),
+    path("filter/",views.FilterMovieView.as_view(),name="filter"),
+    path("films/<slug:slug>/",views.MovieDetailView.as_view(),name = "film_detail"),  
+    path("add-rating/", views.AddStarRating.as_view(), name='add_rating'),
+    path("member/<slug:slug>/",views.MemberView.as_view(),name = "member_detail"),  
+    path("<int:slug>/",views.AddReviewView.as_view(),name = "add_review"), 
 ]
-
