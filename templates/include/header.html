@@ -12,11 +12,18 @@
             <input type="checkbox" id="drop">
             <ul class="menu mt-2">
                 <li class="active"><a href="#">Главная</a></li>
-                <li><a href="contact.html"
-                       style="color: rgb(255, 255, 255); font-weight: 700; text-transform: uppercase;">Вход</a>
+                <li>
+                    {%if request.user.is_authenticated %}
+                        <li> <a href="{% url 'logout' %}">{{request.user.username.lower | title}}</a></li>
+                        <li> <a href="{% url 'logout' %}">Выход</a></li>
+                    {%else%}
+                        <li><a href="{% url 'login' %}">Войти</a></li>
+                        <li><a href="{% url 'register' %}">Регистрация</a></li>
+                    {%endif%}
                 </li>
                 <li>
-                    <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+                    <form action="{% url 'set_language' %}" method="post">
+                        {% csrf_token %}
                         <input name="next" type="hidden" value="{{ language.code }}/{{ request.get_full_path|slice:'4:' }}">
                         <select name="language">
                             {% get_current_language as LANGUAGE_CODE %}

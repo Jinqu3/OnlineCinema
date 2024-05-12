@@ -28,8 +28,8 @@ urlpatterns = [
 ]
 
 urlpatterns += i18n_patterns(
-    path('accounts/',include("allauth.urls")),
     path('',include("cinema.urls")),
+    path('', include('users.urls')),
 )
 
 if settings.DEBUG:

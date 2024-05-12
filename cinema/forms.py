@@ -1,6 +1,6 @@
 from django import forms
-
 from .models import Review,Score,ScoreStar
+
 
 class ReviewForm(forms.ModelForm):
 
@@ -20,3 +20,7 @@ class RatingForm(forms.ModelForm):
     class Meta:
         model = Score
         fields = ("film","user","star")
+
+
+
+    

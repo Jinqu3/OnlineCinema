@@ -44,8 +44,7 @@ INSTALLED_APPS = [
     'django_ckeditor_5',
     'ckeditor_uploader',
     'cinema',
-    'allauth',
-    'allauth.account'
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -81,7 +80,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'OnlineCinema.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -96,10 +94,7 @@ DATABASES = {
     }
 }
 
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-)
+
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -130,6 +125,8 @@ USE_I18N = True
 
 USE_TZ = True
 
+LOGIN_REDIRECT_URL = '/'
+
 gettext = lambda s:s
 LANGUAGES = [
     ('ru',gettext('Russia')),
@@ -158,7 +155,6 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 
-SITE_ID = 1
 
 CKEDITOR_BASEPATH = "/my_static/ckeditor/ckeditor/"
 CKEDITOR_UPLOAD_PATH = "uploads/"
