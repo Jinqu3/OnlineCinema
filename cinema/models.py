@@ -141,6 +141,7 @@ class Member(models.Model):
         verbose_name = "Участник"
         verbose_name_plural = "Участники"
 
+        ordering = ['-id']
         managed = True
         db_table = 'member'
         unique_together = (('name', 'surname'),)

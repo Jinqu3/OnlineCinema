@@ -26,13 +26,22 @@
                         {% csrf_token %}
                         <input name="next" type="hidden" value="{{ language.code }}/{{ request.get_full_path|slice:'4:' }}">
                         <select name="language">
+                            <!-- {% if get_current_language == 'ru' %}
+                                <option value="en">
+                                    {{ en }}
+                                </option>
+                            {% else %}
+                                <option value="ru">
+                                    {{ ru }}
+                                </option>
+                            {% endif %} -->
                             {% get_current_language as LANGUAGE_CODE %}
                             {% get_available_languages as LANGUAGES %}
                             {% get_language_info_list for LANGUAGES as languages %}
                             {% for language in languages %}
                                 <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %}
                                         selected{% endif %}>
-                                    {{ language.name_local }} ({{ language.code }})
+                                     {{ language.code }}
                                 </option>
                             {% endfor %}
                         </select>

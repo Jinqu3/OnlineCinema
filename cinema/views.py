@@ -19,6 +19,8 @@ class MovieView(GenreYear,ListView):
     queryset =  Film.objects.all()
     template_name = "films/film_list.html"
 
+    paginate_by = 3
+
     # def get(self,request):
     #     movies = Film.objects.all()
     #     return render(request,"movies/movies.html",{"movie_list": movies})
@@ -97,3 +99,15 @@ class AddStarRating(View):
             return HttpResponse(status=400)
         
 
+class Search(ListView):
+    """Поиск фильмов"""
+    paginate_by = 3
+    template_name = "films/film_list.html"
+
+    def get_queryset(self):
+        return Film.objects.filter(name__icontains=self.request.GET.get("q"))
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["q"] = f'q={self.request.GET.get("q")}&'
+        return context
