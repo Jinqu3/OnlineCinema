@@ -28,7 +28,7 @@ class RegisterForm(UserCreationForm):
         user_profile = User.objects.create(
             user=user,
             login=user.username,
-            password_user=user.password,
+            password=user.password,
             name=self.cleaned_data.get("name"),
             surname=self.cleaned_data.get("surname"),
             lastname=self.cleaned_data.get("lastname"),
@@ -36,3 +36,8 @@ class RegisterForm(UserCreationForm):
         )
 
         return user
+    
+class UserProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['name', 'surname', 'lastname', 'date_of_birth', 'gender', 'photo']

@@ -25,4 +25,6 @@ urlpatterns = [
     path("add-rating/", views.AddStarRating.as_view(), name='add_rating'),
     path("member/<slug:slug>/",views.MemberView.as_view(),name = "member_detail"),  
     path("<int:slug>/",views.AddReviewView.as_view(),name = "add_review"), 
+    path("<int:slug>/",views.AddViewedView.as_view(),name = "add_viewed"), 
+    path("<int:slug>/",views.AddFavoriteView.as_view(),name = "add_favorite"), 
 ]

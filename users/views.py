@@ -1,7 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
-from .forms import LoginForm, RegisterForm
+from .forms import LoginForm, RegisterForm,UserProfileUpdateForm
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+
+from cinema.models import User
 
 def sign_in(request):
     if request.method == 'GET':
@@ -45,3 +49,24 @@ def sign_up(request):
             return redirect('/')
         else:
             return render(request, 'registration/register.html', {'form': form})
+
+
+
+@login_required
+def user_profile(request):
+    user_profile = get_object_or_404(User, user=request.user)
+    return render(request, 'profile/profile.html', {'profile': user_profile}) 
+
+
+def update_profile(request):
+    if request.method == 'POST':
+        user_form = UserProfileUpdateForm(request.POST, request.FILES, instance=request.user)
+        if user_form.is_valid():
+            user_form.save()
+            messages.success(request, 'Ваш профиль успешно обновлен!')
+            return redirect('user_profile')  # Предполагается, что у вас есть URL для просмотра профиля
+        else:
+            messages.error(request, 'Ошибка при обновлении профиля.')
+    else:
+        user_form = UserProfileUpdateForm(instance=request.user)
+    return render(request, 'profile/profile_edit.html', {'user_form': user_form})

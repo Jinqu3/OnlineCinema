@@ -1,0 +1,70 @@
+<!-- profile/profile.html -->
+{% extends 'profile/base.html' %}
+{% block title %}{{ profile.name}} {{ profile.surname}} {{ profile.lastname}} {% endblock title %}
+{% block container %}
+    <div class="container py-md-3">
+{% endblock container %}
+
+
+{% block sidebar %}
+    <div class="side-bar col-lg-4">
+{% endblock sidebar %}
+
+
+{% block profile %}
+    <div class="left-ads-display col-lg-8">
+        <div class="row">
+            <div class="desc1-left col-md-6">
+                <img src="{{ profile.photo.url }}" class="img-fluid" alt="">
+            </div>
+            <div class="desc1-right col-md-6 pl-lg-4">
+                <h3 class="editContent" style="outline: none; cursor: inherit;">
+                    {{ profile.name}} {{ profile.surname}} {{ profile.lastname}}
+                </h3>
+                <ul>
+                    <li style="list-style: none">
+                        <span><b>Логин:</b>
+                            {{profile.login}}
+                        </span>
+                    </li>
+                    <li style="list-style: none">
+                        <span><b>email:</b>
+                            {{profile.email}}
+                        </span>
+                    </li>
+                    <li style="list-style: none">
+                        <span><b>Дата рождения :</b> 
+                            {{ profile.date_of_birth }}
+                        </span>
+                    </li>
+                    <li style="list-style: none">
+                        <span><b>Пол:</b> {{ profile.gender }}</span>
+                    </li>
+                    <li style="list-style: none">
+                        <span><b>Избранное:</b>
+                            {% for film in profile.favorite.all %}
+                                {{ film.title }}
+                            {% endfor %}
+                        </span>
+                    </li>
+                    <li style="list-style: none">
+                        <span><b>Просмотренное:</b>
+                            {% for film in profile.views.all %}
+                                {{ film.name }}
+                            {% endfor %}
+                        </span>
+                    </li>
+                    <li style="list-style: none">
+                        <span><b>Оцененное:</b>
+                            {% for score in profile.scores.all %}
+                                {{ score.name }}: {{ score.score }}
+                            {% endfor %}
+                        </span>
+                    </li>
+                </ul>
+                <a href="{% url 'profile_edit' %}" class="btn btn-secondary mt-3">Редактировать профиль</a>
+            </div>
+        </div>
+    </div>
+{% endblock profile %}
+

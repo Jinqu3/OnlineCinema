@@ -25,14 +25,13 @@
 </head>
 <body>
 <div id="page" class="page">
-    <div class="main-banner bg {% block header %}  {% endblock header %}" id="home">
+    <div class="main-banner bg {% block header %}{% endblock header %}" id="home">
         {% include 'include/header.html' %}
     </div>
     <ol class="breadcrumb editContent">
         <li class="breadcrumb-item">
-            <a href="#" class="editContent">Домашняя страница</a>
+            <a href="/" class="editContent">Домашняя страница/</a>
         </li>
-        <li class="breadcrumb-item active editContent">Single Page</li>
     </ol>
     {% block content %}
     {% endblock content %}

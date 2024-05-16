@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Film,Genre,Category,Country,Photo,Member,FilmMemberPost,Review,Score,User,Post
+from .models import Film,Genre,Category,Country,Photo,Member,FilmMemberPost,Review,Score,User,Post,ScoreStar
 from modeltranslation.admin import TranslationAdmin
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django import forms
@@ -8,8 +8,10 @@ from django import forms
 from django.utils.safestring import mark_safe
 
 
+
 class FilmUserReviewInline(admin.TabularInline):
     model = Review
+    fk_key = "user"
     extra = 1
 
 class FilmUserScoreInline(admin.TabularInline):
@@ -22,14 +24,20 @@ class FilmUserAdmin(admin.ModelAdmin):
         FilmUserReviewInline,
         FilmUserScoreInline,
     ]
+    
 
 admin.register(User,FilmUserAdmin)
 
+@admin.register(ScoreStar)
+class ScoreAdmin(admin.ModelAdmin):
+    """Отзывы к фильму"""
+    list_display = ("value",)
 
 @admin.register(Post)
 class ReviewAdmin(TranslationAdmin):
     """Отзывы к фильму"""
     list_display = ("name",)
+    fk_name = "user"
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):

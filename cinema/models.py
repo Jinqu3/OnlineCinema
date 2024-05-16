@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import datetime
 from django.urls import reverse
+from django.contrib.auth.models import User as DefaultUser
 
 from django_ckeditor_5.fields import CKEditor5Field
 """
@@ -21,28 +22,39 @@ class User(models.Model):
 
     MALE = 'Mужчина'
     FEMALE = 'Женщина'
+    MALE_EN = ''
+    FEMALE_EN = 'Женщина'
     GENDERS = [
         (MALE,'Мужчина'),
-        (FEMALE,'Женщина')
+        (FEMALE,'Женщина'),
+        (MALE_EN,'Man'),
+        (FEMALE_EN,'Woman')
     ]
 
+    user=models.OneToOneField(DefaultUser, on_delete=models.CASCADE,null = True)
     name = models.CharField(max_length=20)
     surname = models.CharField(max_length=30)
     lastname = models.CharField(max_length=30, blank=True, null=True)
-    date_of_birth = models.DateField()
-    gender = models.CharField(max_length=7,choices=GENDERS)
+    date_of_birth = models.DateField(null=True,blank=True)
+    gender = models.CharField(max_length=7,null=True,blank=True,choices=GENDERS)
     login = models.CharField(max_length=30)
     password = models.CharField(max_length=100)
     email = models.CharField(max_length=256)
-    photo = models.ImageField(upload_to="users/")
+    photo = models.ImageField(null=True,blank=True,upload_to="users/",default="user/default_user_image.jpeg")
+    url = models.SlugField(max_length=256,unique=True, blank=False, null=True)
 
-    roles = models.ManyToManyField("Role")
-    views = models.ManyToManyField("Film",related_name="viewed")
-    favorite = models.ManyToManyField("Film",related_name="favorite")
-    scores = models.ManyToManyField("Film",through="Score",related_name="scores")
+    roles = models.ManyToManyField("Role",blank=True)
+    views = models.ManyToManyField("Film",related_name="viewed",blank=True)
+    favorite = models.ManyToManyField("Film",related_name="favorite",blank=True)
+    scores = models.ManyToManyField("Film",through="Score",related_name="scores",blank=True)
+    reviews = models.ManyToManyField("Film",through="Review",related_name="user_reviews",blank=True)
 
     def __str__(self):
-        return self.name+self.surname
+        return self.name+" "+self.surname
+
+    def get_absolute_url(self):
+        return reverse("user_profile", kwargs = {"slug":self.url})
+
 
     class Meta:
 
@@ -51,6 +63,8 @@ class User(models.Model):
 
         managed = True
         db_table = '_user'
+
+    
 
 """
 Категория
@@ -61,6 +75,7 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
 
     class Meta:
 
@@ -113,18 +128,22 @@ class Genre(models.Model):
 class Member(models.Model):
     MALE = 'Mужчина'
     FEMALE = 'Женщина'
+    MALE_EN = ''
+    FEMALE_EN = 'Женщина'
     GENDERS = [
         (MALE,'Мужчина'),
-        (FEMALE,'Женщина')
+        (FEMALE,'Женщина'),
+        (MALE_EN,'Man'),
+        (FEMALE_EN,'Woman')
     ]
 
     name = models.CharField(max_length=20)
     surname = models.CharField(max_length=30)
     lastname = models.CharField(max_length=30,blank=True)
     description = CKEditor5Field(max_length=1000,blank=True, null=True,config_name='extends')
-    date_of_birth = models.DateField()
+    date_of_birth = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=7,choices=GENDERS)
-    photo = models.ImageField(upload_to="members/",null=True)
+    photo = models.ImageField(upload_to="members/",null=True,blank = True)
     url = models.SlugField(max_length=256,unique=True, blank=False, null=True)
 
     members_posts = models.ManyToManyField("Post",through="FilmMemberPost",related_name="posts")
@@ -191,12 +210,16 @@ class Film(models.Model):
     categories = models.ManyToManyField("Category",related_name="film_categories")
     members = models.ManyToManyField("Member",through="FilmMemberPost",related_name="film_members")
     members_posts = models.ManyToManyField("Post",through="FilmMemberPost",related_name="film_member_posts")
+    reviews = models.ManyToManyField("User",through="Review",related_name="film_reviews")
 
     def __str__(self):
         return self.name
     
     def get_absolute_url(self):
         return reverse("film_detail", kwargs = {"slug":self.url})
+    
+    def get_review(self):
+        return self.review_set.all()
 
     class Meta:
 
@@ -238,7 +261,7 @@ class Post(models.Model):
 class Review(models.Model):
     review_id = models.AutoField(primary_key=True)  
     film = models.ForeignKey("Film",on_delete= models.CASCADE)
-    user = models.ForeignKey("User",on_delete= models.CASCADE)
+    user = models.ForeignKey("User",on_delete= models.CASCADE,related_name="user_review")
     text = models.TextField(max_length=5000)
 
     class Meta:
@@ -248,7 +271,6 @@ class Review(models.Model):
 
         managed = True
         db_table = 'review'
-        unique_together = (('film', 'user'),)
 
 """
 Оценка
@@ -256,7 +278,7 @@ class Review(models.Model):
 
 class ScoreStar(models.Model):
 
-    STARS = [(i,i) for i in range(1,11)]
+    STARS = [(i,i) for i in range(1,6)]
 
     value = models.IntegerField(choices=STARS,default=0)
 

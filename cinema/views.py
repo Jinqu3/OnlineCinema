@@ -3,8 +3,9 @@ from django.shortcuts import render,redirect,HttpResponse
 from django.views.generic.base import View
 from django.views.generic import ListView,DetailView
 from django.db.models import Q
-from .models import Film,Member,Genre,Score
+from .models import Film,Member,Genre,Score,User,ScoreStar
 from .forms import ReviewForm,RatingForm
+from django.shortcuts import get_object_or_404
 
 class GenreYear:
 
@@ -13,13 +14,15 @@ class GenreYear:
     
     def get_years(self):
         return Film.objects.all().values("year")
+    
+    def get_stars(self):
+        return ScoreStar.objects.all().values("value")
 
 class MovieView(GenreYear,ListView):
     model = Film
-    queryset =  Film.objects.all()
+    queryset =  Film.objects.all().order_by('id')
     template_name = "films/film_list.html"
-
-    paginate_by = 3
+    paginate_by = 6
 
     # def get(self,request):
     #     movies = Film.objects.all()
@@ -40,6 +43,7 @@ class MovieDetailView(GenreYear,DetailView):
     model = Film
     template_name = "films/film_detail.html"
     slug_field = "url"
+    queryset = Film.objects.all().prefetch_related()
 
     def get_context_data(self, **kwargs: Any):
         context =  super().get_context_data(**kwargs)
@@ -52,21 +56,11 @@ class MovieDetailView(GenreYear,DetailView):
     #     movie = Film.objects.get(url=slug)
     #     return render(request,"movies/movie_single.html",{"movie":movie})
 
-class AddReviewView(View):
-
-    template_name = "films/film_detail.html"
-
-    def post(self,request,pk):
-        form = ReviewForm(request.POST)
-        if form.is_valid():
-            form = form.save(commit = False)
-            form.film_id = pk
-            form.save()
-        return redirect("/")    
     
 class FilterMovieView(GenreYear, ListView):
 
     template_name = "films/film_list.html"
+    paginate_by = 1
 
     def get_queryset(self):
         queryset = Film.objects.filter(
@@ -74,34 +68,69 @@ class FilterMovieView(GenreYear, ListView):
             Q(genres__in=self.request.GET.getlist("genre"))
         ).distinct()
         return queryset
+    
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["year"] = ''.join([f"year={x}&" for x in self.request.GET.getlist("year")])
+        context["genre"] = ''.join([f"genre={x}&" for x in self.request.GET.getlist("genre")])
+        return context
+
 
 class AddStarRating(View):
     """Добавление рейтинга фильму"""
 
-    def get_client_ip(self, request):
-        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        if x_forwarded_for:
-            ip = x_forwarded_for.split(',')[0]
-        else:
-            ip = request.META.get('REMOTE_ADDR')
-        return ip
+    template_name = "films/film_detail.html"
 
-    def post(self, request):
+    def post(self, request,slug):
         form = RatingForm(request.POST)
+        film = get_object_or_404(Film,id=slug)
         if form.is_valid():
+            form = form.save(commit = False)
             Score.objects.update_or_create(
-                user_id=self.get_client_ip(request),
-                film_id=int(request.POST.get("film")),
-                defaults={'star': int(request.POST.get("star"))}
+                user=get_object_or_404(User, user=request.user),
+                film=film,
             )
-            return HttpResponse(status=201)
-        else:
-            return HttpResponse(status=400)
+        return redirect(film.get_absolute_url())   
+class AddReviewView(View):
+
+    template_name = "films/film_detail.html"
+
+    def post(self,request,slug):
+        form = ReviewForm(request.POST)
+        film = get_object_or_404(Film,id=slug)
+        if form.is_valid():
+            form = form.save(commit = False)
+            form.film = film
+            if request.user.is_authenticated:
+                form.user = User.objects.get(user=request.user)# get_object_or_404(User, user=request.user),
+            form.save()
+        return redirect(film.get_absolute_url())    
         
+
+class AddViewedView(ListView):
+    template_name = "films/film_detail.html"
+
+    def post(self,request,slug):
+        film = get_object_or_404(Film,id=slug)
+        "_user_views".objects.update_or_create(
+                user=get_object_or_404(User, user=request.user),
+                film=get_object_or_404(Film, id=request.POST.get("film")),
+            )
+        return redirect(film.get_absolute_url())    
+
+class AddFavoriteView(ListView):
+    template_name = "films/film_detail.html"
+
+    def post(self,request,slug):
+        film = get_object_or_404(Film,id=slug)
+        "_user_favorite".objects.update_or_create(
+                user=get_object_or_404(User, user=request.user),
+                film=get_object_or_404(Film, id=request.POST.get("film")),
+            )
+        return redirect(film.get_absolute_url())   
 
 class Search(ListView):
     """Поиск фильмов"""
-    paginate_by = 3
     template_name = "films/film_list.html"
 
     def get_queryset(self):
@@ -111,3 +140,4 @@ class Search(ListView):
         context = super().get_context_data(*args, **kwargs)
         context["q"] = f'q={self.request.GET.get("q")}&'
         return context
+    

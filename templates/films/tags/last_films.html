@@ -6,8 +6,7 @@
                 <img src="{{film.poster.url}}" class="img-fluid" alt="">
             </div>
             <div class="img-deal1 col-md-4">
-                <h3 class="editContent">{{ film.name }}</h3>
-                <a href="{{ film.get_absolute_url }}" class="editContent"></a>
+                <a href="{{ film.get_absolute_url }}" class="editContent">{{ film.name }}</a>
             </div>
         </div>
     {% endfor %}

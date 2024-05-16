@@ -4,17 +4,17 @@
         <!-- nav -->
         <nav class="py-4">
             <div id="logo">
-                <h1><a href="#" class="editContent"
-                       style="outline: none; outline-offset: -2px; cursor: inherit; color: rgb(255, 255, 255); font-size: 40px; background-color: rgba(0, 0, 0, 0); font-family: Source Sans Pro, sans-serif;">Кинотека</a>
+                <h1><a href="/" class="editContent"
+                       style="outline: none; outline-offset: -2px; cursor: inherit; color: rgb(0, 0, 0); font-size: 40px; background-color: rgba(0, 0, 0, 0); font-family: Source Sans Pro, sans-serif;">Кинотека</a>
                 </h1>
             </div>
             <label for="drop" class="toggle">Menu</label>
             <input type="checkbox" id="drop">
             <ul class="menu mt-2">
-                <li class="active"><a href="#">Главная</a></li>
+                <li class="active"><a href="/">Главная</a></li>
                 <li>
                     {%if request.user.is_authenticated %}
-                        <li> <a href="{% url 'logout' %}">{{request.user.username.lower | title}}</a></li>
+                        <li> <a href="{% url 'user_profile' %}">{{request.user.username.lower | title}}</a></li>
                         <li> <a href="{% url 'logout' %}">Выход</a></li>
                     {%else%}
                         <li><a href="{% url 'login' %}">Войти</a></li>
@@ -26,15 +26,6 @@
                         {% csrf_token %}
                         <input name="next" type="hidden" value="{{ language.code }}/{{ request.get_full_path|slice:'4:' }}">
                         <select name="language">
-                            <!-- {% if get_current_language == 'ru' %}
-                                <option value="en">
-                                    {{ en }}
-                                </option>
-                            {% else %}
-                                <option value="ru">
-                                    {{ ru }}
-                                </option>
-                            {% endif %} -->
                             {% get_current_language as LANGUAGE_CODE %}
                             {% get_available_languages as LANGUAGES %}
                             {% get_language_info_list for LANGUAGES as languages %}
@@ -58,8 +49,6 @@
 <!-- //header -->
 <!--/banner-->
 <div class="banner-info">
-    <h3 class="mb-4 editContent">Мир твоего любимого кино</h3>
-    <div class="ban-buttons">
-    </div>
+    <h3 class="mb-4 editContent" style= "color: rgb(0, 0, 0);">Мир твоего любимого кино</h3>
 </div>
 <!--// banner-inner -->

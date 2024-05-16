@@ -481,6 +481,13 @@ mark,
   max-width: 100%;
   height: auto;
 }
+
+.img-fluid1 {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+}
+
 .img-movie-shots {
   max-width: 250px;
   height: auto;
@@ -627,7 +634,7 @@ pre code {
   width: 100%;
   min-height: 1px;
   padding-right: 15px;
-  padding-left: 15px;
+  padding-left: 10px;
 }
 
 .col {
@@ -5154,6 +5161,7 @@ tbody.collapse.show {
   -webkit-box-align: start;
   -ms-flex-align: start;
   align-items: flex-start;
+  border-bottom: 1px dashed gray;
 }
 
 .media-body {

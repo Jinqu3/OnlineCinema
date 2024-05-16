@@ -8,7 +8,6 @@
                                        aria-hidden="true"></span></button>
     </form>
 </div>
-<!--preference -->
 <form action="{% url 'filter' %}" method="get">
     <div class="left-side my-4">
         <h3 class="sear-head editContent">Жанры</h3>
@@ -40,56 +39,12 @@
 <div class="customer-rev left-side my-4">
     <h3 class="sear-head editContent">Рейтинг</h3>
     <ul class="w3layouts-box-list">
-        <li class="editContent">
-                <input type="checkbox" class="checked">
-                <span class="span editContent">10</span>
-            </li>
-        </li>
-        <li class="editContent">
-                <input type="checkbox" class="checked">
-                <span class="span editContent">9</span>
-            </li>
-        </li>
-        <li class="editContent">
-                <input type="checkbox" class="checked">
-                <span class="span editContent">8</span>
-            </li>
-        </li>
-        <li class="editContent">
-                <input type="checkbox" class="checked">
-                <span class="span editContent">7</span>
-            </li>
-        </li>
-        <li class="editContent">
-                <input type="checkbox" class="checked">
-                <span class="span editContent">6</span>
-            </li>
-        </li>
-        <li class="editContent">
-                <input type="checkbox" class="checked">
-                <span class="span editContent">5</span>
-            </li>
-        </li>
-        <li class="editContent">
-                <input type="checkbox" class="checked">
-                <span class="span editContent">4</span>
-            </li>
-        </li>
-        <li class="editContent">
-                <input type="checkbox" class="checked">
-                <span class="span editContent">3</span>
-            </li>
-        </li>
-        <li class="editContent">
-                <input type="checkbox" class="checked">
-                <span class="span editContent">2</span>
-            </li>
-        </li>
-        <li class="editContent">
-                <input type="checkbox" class="checked">
-                <span class="span editContent">1</span>
-            </li>
-        </li>
+        {% for film in view.get_stars %}
+                <li class="editContent">
+                    <input type="checkbox" class="checked" name="star" value="{{film.value}}">
+                    <span class="span editContent">{{film.value}}</span>
+                </li>
+        {% endfor %}
     </ul>
 </div>
 {% get_last_movies count=5 %}
