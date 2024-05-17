@@ -1,9 +1,11 @@
 {% extends 'films/base.html' %}
-{% block title %} Кинотека - Смотри Фильмы, Сериалы, Спорт бесплатно {% endblock title %}
+{% load i18n %}
+{% block title %} {% get_current_language as LANGUAGE_CODE %} {% if LANGUAGE_CODE == 'ru' %} Кинотека - Смотри Фильмы, Сериалы, Спорт бесплатно  {% else %} Kinoteka - Watch Movies, TV-Series, Sport for free {% endif %}{% endblock title %}
 {% block header %} {% endblock header %}
 {% block film %}
     <div class="left-ads-display col-lg-9">
         <div class="row">
+            
             {% for film in film_list %}
                 <div class="col-md-4 product-men">
                     <div class="product-shoe-info editContent text-center mt-lg-4">

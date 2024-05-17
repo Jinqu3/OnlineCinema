@@ -64,9 +64,10 @@ def update_profile(request):
         if user_form.is_valid():
             user_form.save()
             messages.success(request, 'Ваш профиль успешно обновлен!')
-            return redirect('user_profile')  # Предполагается, что у вас есть URL для просмотра профиля
+            return redirect('user_profile') 
         else:
             messages.error(request, 'Ошибка при обновлении профиля.')
     else:
-        user_form = UserProfileUpdateForm(instance=request.user)
+        user_profile = get_object_or_404(User, user=request.user)
+        user_form = UserProfileUpdateForm(instance=user_profile)
     return render(request, 'profile/profile_edit.html', {'user_form': user_form})

@@ -1,5 +1,7 @@
+{% load i18n %}
 <div class="deal-leftmk left-side">
-    <h3 class="sear-head editContent">Последние добавленные</h3>
+    {% get_current_language as LANGUAGE_CODE %}
+    <h3 class="sear-head editContent">{% if LANGUAGE_CODE == 'ru' %} Последние добавленные {% else %} Latest Add {% endif %}</h3>
     {% for film in last_films %}
         <div class="special-sec1 row mt-3 editContent">
             <div class="img-deals col-md-4">

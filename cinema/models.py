@@ -2,22 +2,12 @@ from django.db import models
 from datetime import datetime
 from django.urls import reverse
 from django.contrib.auth.models import User as DefaultUser
-
+from django.core.validators import FileExtensionValidator
+from django.db.models import Avg
 from django_ckeditor_5.fields import CKEditor5Field
 """
 Пользователь
 """ 
-class Role(models.Model):
-    name = models.CharField(max_length=20)
-
-    class Meta:
-
-        verbose_name = "Роль"
-        verbose_name_plural = "Роли"
-
-        managed = True
-        db_table = 'role'
-        
 class User(models.Model):
 
     MALE = 'Mужчина'
@@ -37,13 +27,11 @@ class User(models.Model):
     lastname = models.CharField(max_length=30, blank=True, null=True)
     date_of_birth = models.DateField(null=True,blank=True)
     gender = models.CharField(max_length=7,null=True,blank=True,choices=GENDERS)
-    login = models.CharField(max_length=30)
+    login = models.CharField(unique=True, max_length=30)
     password = models.CharField(max_length=100)
-    email = models.CharField(max_length=256)
-    photo = models.ImageField(null=True,blank=True,upload_to="users/",default="user/default_user_image.jpeg")
-    url = models.SlugField(max_length=256,unique=True, blank=False, null=True)
+    email = models.CharField(unique=True,blank= True,max_length=256)
+    photo = models.ImageField(null=True,blank=True,upload_to="users/",default="users/default_user_image.jpeg")
 
-    roles = models.ManyToManyField("Role",blank=True)
     views = models.ManyToManyField("Film",related_name="viewed",blank=True)
     favorite = models.ManyToManyField("Film",related_name="favorite",blank=True)
     scores = models.ManyToManyField("Film",through="Score",related_name="scores",blank=True)
@@ -52,9 +40,11 @@ class User(models.Model):
     def __str__(self):
         return self.name+" "+self.surname
 
-    def get_absolute_url(self):
-        return reverse("user_profile", kwargs = {"slug":self.url})
-
+    def get_views(self):
+        return self.views.all()
+    
+    def get_favorite(self):
+        return self.favorite.all()
 
     class Meta:
 
@@ -63,6 +53,7 @@ class User(models.Model):
 
         managed = True
         db_table = '_user'
+
 
     
 
@@ -143,7 +134,7 @@ class Member(models.Model):
     description = CKEditor5Field(max_length=1000,blank=True, null=True,config_name='extends')
     date_of_birth = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=7,choices=GENDERS)
-    photo = models.ImageField(upload_to="members/",null=True,blank = True)
+    photo = models.ImageField(upload_to="members/",default="members/default_member_image.jpeg",null=True,blank = True)
     url = models.SlugField(max_length=256,unique=True, blank=False, null=True)
 
     members_posts = models.ManyToManyField("Post",through="FilmMemberPost",related_name="posts")
@@ -193,8 +184,8 @@ class Film(models.Model):
     name = models.CharField(max_length=130,unique=True)
     slogan = models.CharField(max_length=50, blank=True, null=True)
     description = CKEditor5Field(blank=True, null=True,config_name='extends')
-    poster = models.ImageField(upload_to="films/",null=True)
-    year = models.IntegerField(choices=YEAR_CHOICES, default=datetime.now().year)
+    poster = models.ImageField(upload_to="films/",default="films/default_film_image.jpg",blank=True,null=True)
+    year = models.IntegerField(choices=YEAR_CHOICES, blank=True,null=True)
     release_date_world = models.DateField(blank=True, null=True)
     release_date_russia = models.DateField(blank=True, null=True)
     budjet = models.IntegerField(blank=True, null=True)
@@ -204,6 +195,8 @@ class Film(models.Model):
     mpaa_rating = models.CharField(max_length=5, blank=True, null=True)
     trailer_url = models.CharField(max_length=256, blank=True, null=True)
     url = models.SlugField(max_length=256,unique=True, blank=False, null=True)
+    video = models.FileField(upload_to='video/',validators = [FileExtensionValidator(allowed_extensions=['mp4'])],blank=True,null=True)  
+
 
     countries = models.ManyToManyField("Country",related_name="film_countries")
     genres = models.ManyToManyField("Genre",related_name="film_genres")
@@ -211,6 +204,8 @@ class Film(models.Model):
     members = models.ManyToManyField("Member",through="FilmMemberPost",related_name="film_members")
     members_posts = models.ManyToManyField("Post",through="FilmMemberPost",related_name="film_member_posts")
     reviews = models.ManyToManyField("User",through="Review",related_name="film_reviews")
+    user_scores = models.ManyToManyField("User",through="Score",related_name="film_scores",blank=True)
+    user_views = models.ManyToManyField("User",related_name="film_viewed",blank=True)
 
     def __str__(self):
         return self.name
@@ -220,7 +215,18 @@ class Film(models.Model):
     
     def get_review(self):
         return self.review_set.all()
+    
+    def get_video(self):
+        return self.video
+    
+    def get_user_score(self,user):
+        return self.user_scores.filter(user=user)
 
+    def get_average_rating(self):
+        average_rating = self.score_set.aggregate(Avg('star__value')).get('star__value__avg')
+        if average_rating is not None:
+            return round(average_rating, 1)  # Округление до одного знака после запятой
+        return 0 
     class Meta:
 
         verbose_name = "Фильм"

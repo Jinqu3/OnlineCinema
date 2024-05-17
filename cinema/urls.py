@@ -18,13 +18,13 @@ from . import views
 from django.urls import path
 
 urlpatterns = [
-    path("", views.MovieView.as_view()),
+    path("", views.MovieView.as_view(),name="list"),
     path("filter/",views.FilterMovieView.as_view(),name="filter"),
     path("search/",views.Search.as_view(),name="search"),
     path("films/<slug:slug>/",views.MovieDetailView.as_view(),name = "film_detail"),  
-    path("add-rating/", views.AddStarRating.as_view(), name='add_rating'),
+    path("<slug:slug>/add-rating/", views.AddStarRating.as_view(), name='add_rating'),
     path("member/<slug:slug>/",views.MemberView.as_view(),name = "member_detail"),  
     path("<int:slug>/",views.AddReviewView.as_view(),name = "add_review"), 
-    path("<int:slug>/",views.AddViewedView.as_view(),name = "add_viewed"), 
-    path("<int:slug>/",views.AddFavoriteView.as_view(),name = "add_favorite"), 
+    path('<int:film_id>/favorite/', views.AddToFavoriteView.as_view(), name='add_to_favorite'),
+    path('<int:film_id>/viewed/', views.MarkAsViewedView.as_view(), name='mark_as_viewed'),
 ]

@@ -7,3 +7,7 @@ register = template.Library()
 def get_last_movies(count=5):
     films = Film.objects.order_by("id")[:count]
     return {"last_films":films}
+
+@register.filter(name='add_class')
+def add_class(field, css_class):
+    return field.as_widget(attrs={'class': css_class})

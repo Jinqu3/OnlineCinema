@@ -1,5 +1,6 @@
 {% extends 'films/base.html' %}
-{% block title %} {{ film.name }} {% endblock title %}
+{% load i18n %}
+{% block title %} {{ film.name }} ({{film.year}}){% endblock title %}
 {% block header %} {% endblock header %}
 {% block container %}
     <div class="container py-md-3">
@@ -18,24 +19,27 @@
             </div>
             <div class="desc1-right col-md-6 pl-lg-4">
                 <h3 class="editContent" style="outline: none; cursor: inherit;">
-                    {{ film.name }} {{'('}}{{film.year}}{{')'}}
+                    {{ film.name }} ({{film.year}})
+                    
                 </h3>
                 <h5 class="editContent">{{ film.name_en }}</h5>
                 <ul>
                     <li style="list-style: none">
-                        <span><b>Год:</b> {{ film.year }}</span></li>
+                        {% get_current_language as LANGUAGE_CODE %}
+                        <span><b>{% if LANGUAGE_CODE == 'ru' %} Год {% else %} Year {% endif %}</b>{{ film.year }}</span>
+                    </li>
                     <li style="list-style: none">
-                        <span><b>Страна:</b> 
+                        <span><b>{% if LANGUAGE_CODE == 'ru' %} Страна: {% else %} Country: {% endif %}</b> 
                             {% for country in film.countries.all %}
                                 {{ country.name }}
                             {% endfor %}
                         </span>
                     </li>
                     <li style="list-style: none">
-                        <span><b>Слоган:</b> {{ film.slogan }}</span>
+                        <span><b>{% if LANGUAGE_CODE == 'ru' %} Слоган: {% else %} Tagline: {% endif %}</b> {{ film.slogan }}</span>
                     </li>
                     <li style="list-style: none">
-                        <span><b>Режиссёры:</b>
+                        <span><b>{% if LANGUAGE_CODE == 'ru' %} Режиссёр: {% else %} Director: {% endif %}</b>
                             {% for film_member_post in film.filmmemberpost_set.all %}
                                 {% if film_member_post.post.name == 'Режиссёр' or film_member_post.post.name == 'Director' %}
                                     <a href="{{ film_member_post.member.get_absolute_url }}"> 
@@ -46,7 +50,7 @@
                         </span>
                     </li>
                     <li style="list-style: none">
-                        <span><b>Операторы:</b>
+                        <span><b>{% if LANGUAGE_CODE == 'ru' %} Оператор: {% else %} Operator: {% endif %}</b>
                             {% for film_member_post in film.filmmemberpost_set.all %}
                                 {% if film_member_post.post.name == 'Оператор' or film_member_post.post.name == 'Operator' %}
                                     <a href="{{ film_member_post.member.get_absolute_url }}"> 
@@ -57,7 +61,7 @@
                         </span>
                     </li>
                     <li style="list-style: none">
-                        <span><b>Сценаристы:</b>
+                        <span><b>{% if LANGUAGE_CODE == 'ru' %} Сценарий: {% else %} Scenario: {% endif %}:</b>
                             {% for film_member_post in film.filmmemberpost_set.all %}
                                 {% if film_member_post.post.name == 'Сценарист' or film_member_post.post.name == 'Scenarist' %}
                                     <a href="{{ film_member_post.member.get_absolute_url }}"> 
@@ -68,7 +72,7 @@
                         </span>
                     </li>
                     <li style="list-style: none">
-                        <span><b>Композиторы:</b>
+                        <span><b>{% if LANGUAGE_CODE == 'ru' %} Композитор: {% else %} Compositor: {% endif %}</b>
                             {% for film_member_post in film.filmmemberpost_set.all %}
                                 {% if film_member_post.post.name == 'Композитор' or film_member_post.post.name == 'Compositor' %}
                                     <a href="{{ film_member_post.member.get_absolute_url }}"> 
@@ -79,7 +83,7 @@
                         </span>
                     </li>
                     <li style="list-style: none">
-                        <span><b>Актеры:</b>
+                        <span><b>{% if LANGUAGE_CODE == 'ru' %} Актёр: {% else %} Actor: {% endif %}</b>
                             {% for film_member_post in film.filmmemberpost_set.all %}
                                 {% if film_member_post.post.name == 'Актёр' or film_member_post.post.name == 'Actor'%}
                                     <a href="{{ film_member_post.member.get_absolute_url }}"> 
@@ -90,46 +94,69 @@
                         </span>
                     </li>
                     <li style="list-style: none">
-                        <span><b>Жанр:</b>
+                        <span><b>{% if LANGUAGE_CODE == 'ru' %} Жанр: {% else %} Genres: {% endif %}</b>
                         {% for genre in film.genres.all %}
                             {{ genre.name }}
                         {% endfor %}
                         </span>
                     </li>
                     <li style="list-style: none">
-                        <span><b>Премьера в мире: </b> {{ film.release_date_world }}</span>
+                        <span><b>{% if LANGUAGE_CODE == 'ru' %} Премьера в мире: {% else %} Release date (World) {% endif %}</b> {{ film.release_date_world }}</span>
                     </li>
                     <li style="list-style: none">
-                        <span><b>Премьера в России: </b> {{ film.release_date_russia }}</span>
+                        <span><b>{% if LANGUAGE_CODE == 'ru' %} Премьера в России: {% else %} Release date (Russia) {% endif %} </b> {{ film.release_date_russia }}</span>
                     </li>
                     <li style="list-style: none">
-                        <span><b>Бюджет: </b> {{ film.budjet }} $</span>
+                        <span><b>{% if LANGUAGE_CODE == 'ru' %} Бюджет: {% else %} Budjet {% endif %} </b> {{ film.budjet }} $</span>
                     </li>
                     <li style="list-style: none">
-                        <span><b>Сборы: </b> {{ film.gross }} $</span>
+                        <span><b>{% if LANGUAGE_CODE == 'ru' %} Сборы: {% else %} Gross worldwide: {% endif %} </b> {{ film.gross }} $</span>
                     </li>
-                    <li style="list-style: none">
-                        <span><b>Рейтинг: </b>Тут сделать скрипт</span>
+                    <li style="list-style: none">   
+                        <span><b>{% if LANGUAGE_CODE == 'ru' %} Рейтинг: {% else %} Rating: {% endif %} </b>{{film.get_average_rating}}</span>
+                        <span><b>{% if LANGUAGE_CODE == 'ru' %} Ваша оценка: {% else %} Your rate: {% endif %} </b></span>
                     </li>
                     <li>
-                        <form action="{% url 'add_rating' %}" method="post" name="rating">
+                        <form action="{% url 'add_rating' film.url %}" method="post" name="rating">
                             {% csrf_token %}
-                            <input type="hidden" value="{{ film.id }}" name="film">
                             <span class="rating">
                                 {% for k, v in star_form.fields.star.choices %}
-                                    <input id="rating{{ v }}" type="radio" name="star"
-                                           value="{{ k }}">
+                                    <input id="rating{{ v }}" type="radio" name="star" value="{{ k }}">
                                     <label for="rating{{ v }}">{{ k }}</label>
                                 {% endfor %}
                             </span>
-                            <button type="submit">Отправить</button>
+                            <button type="submit">{% if LANGUAGE_CODE == 'ru' %} Оставить оценку {% else %} Leave a rating {% endif %}</button>
+                        </form>
+                    </li>
+                    <li>
+                        <form action="{% url 'add_to_favorite' film.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit">
+                                {% if film in request.user.get_favorite %}
+                                {% if LANGUAGE_CODE == 'ru' %} Удалить из избранного {% else %} Delete Favorite {% endif %}
+                                {% else %}
+                                {% if LANGUAGE_CODE == 'ru' %} Добавить в избранное {% else %} Add Favorite {% endif %}
+                                {% endif %}
+                            </button>
+                        </form>
+                    </li>
+                    <li>
+                        <form action="{% url 'mark_as_viewed' film.id %}" method="post">
+                            {% csrf_token %}                        
+                            <button type="submit">  
+                                {% if film in request.user.get_favorite %}
+                                    {% if LANGUAGE_CODE == 'ru' %} Удалить из просмотренного {% else %} Delete Viewed {% endif %}
+                                {% else %}
+                                    {% if LANGUAGE_CODE == 'ru' %} Добавить в просмотренное {% else %} Add Viewed {% endif %}
+                                {% endif %}
+                            </button>
                         </form>
                     </li>
             </div>
         </div>
         <div class="row sub-para-w3layouts mt-5">
             <h3 class="shop-sing editContent" style="outline: none; cursor: inherit;">
-                О фильме {{ film.name }}
+                {% if LANGUAGE_CODE == 'ru' %} О фильме {% else %} About Movie {% endif %} {{ film.name }}
             </h3>
             <p>
                 {% for image in film.photo_set.all %}
@@ -147,13 +174,13 @@
                     <h3 class="editContent" style="outline: none; cursor: inherit;">
                         <span class="sub-tittle editContent"
                             style="outline: none; cursor: inherit;">
-                        </span>Оставить отзыв
+                        </span>{% if LANGUAGE_CODE == 'ru' %} Оставить отзыв {% else %} Leave Review {% endif %}
                     </h3>
                     <form action="{% url 'add_review' film.id %}" method="post" class="mt-4">
                         {% csrf_token %}
                         <div class="form-group editContent"
                             <label for="contactcomment" class="editContent"
-                                Ваш комментарий *
+                                {% if LANGUAGE_CODE == 'ru' %} Ваш комментарий * {% else %} Your Comment {% endif %}
                             </label>
                             <textarea class="form-control border" rows="5" name="text"
                                     id="contactcomment" required=""></textarea>
@@ -161,7 +188,7 @@
                         <button type="submit"
                                 class="mt-3 btn btn-success btn-block py-3"
                                 style="outline: none; cursor: inherit;">
-                                Отправить
+                                {% if LANGUAGE_CODE == 'ru' %} Отправить {% else %} Send {% endif %}
                         </button>
                     </form>
                 </div>
@@ -174,7 +201,7 @@
                 <div class="media-body mt-4">
                     <h5 class="mt-0 editContent"
                         style="outline: none; cursor: inherit;">
-                        {{ review.user }}
+                        {{ review.user.login }}
                     </h5>
                     <p class="mt-2 editContent">
                         {{ review.text }}
@@ -187,5 +214,5 @@
         {% include 'include/pagination.html' %}
     </div>
 </div>
-    </div>
+</div>
 {% endblock film %}

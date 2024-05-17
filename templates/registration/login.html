@@ -1,20 +1,24 @@
 {% extends 'registration/base.html' %}
-{% block title %} {% endblock title %}
+{% load i18n film_tag %}
+{% block title %}{% if LANGUAGE_CODE == 'ru' %} Вход {% else %} Login {% endif %}{% endblock title %}
 {% block header %}{% endblock header %}
 {% block authorization %}
-<div class="container">
-    <h2>Вход</h2>
-    <form method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="{{ form.username.id_for_label }}">Имя пользователя:</label>
-            {{ form.username }}
-        </div>
-        <div class="form-group">
-            <label for="{{ form.password.id_for_label }}">Пароль:</label>
-            {{ form.password }}
-        </div>
-        <button type="submit" class="btn btn-primary">Войти</button>
-    </form>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 10vh;">
+    <div class="card p-4 shadow" style="max-width: 400px; width: 100%;">
+        {% get_current_language as LANGUAGE_CODE %}
+        <h2 class="text-center mb-4">{% if LANGUAGE_CODE == 'ru' %} Вход {% else %} Login {% endif %}</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group mb-3">
+                <label for="{{ form.username.id_for_label }}">{% if LANGUAGE_CODE == 'ru' %} Имя пользователя: {% else %} Username: {% endif %}</label>
+                {{ form.username|add_class:"form-control mx-auto" }}
+            </div>
+            <div class="form-group mb-3">
+                <label for="{{ form.password.id_for_label }}">{% if LANGUAGE_CODE == 'ru' %} Пароль {% else %} Password {% endif %}</label>
+                {{ form.password|add_class:"form-control mx-auto" }}
+            </div>
+            <button type="submit" class="btn btn-danger btn-block">{% if LANGUAGE_CODE == 'ru' %} Войти {% else %} Login {% endif %}</button>
+        </form>
+    </div>
 </div>
 {% endblock %}

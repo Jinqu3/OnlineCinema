@@ -1,42 +1,43 @@
 {% load i18n film_tag %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_available_languages as LANGUAGES %}
+{% get_language_info_list for LANGUAGES as languages %}
 <header class="header">
     <div class="container-fluid px-lg-5">
         <!-- nav -->
         <nav class="py-4">
             <div id="logo">
                 <h1><a href="/" class="editContent"
-                       style="outline: none; outline-offset: -2px; cursor: inherit; color: rgb(0, 0, 0); font-size: 40px; background-color: rgba(0, 0, 0, 0); font-family: Source Sans Pro, sans-serif;">Кинотека</a>
+                       style="outline: none; outline-offset: -2px; cursor: inherit; color: rgb(255, 255, 255); font-size: 40px; background-color: rgba(0, 0, 0, 0); font-family: Source Sans Pro, sans-serif;">{% if LANGUAGE_CODE == 'ru' %} Кинотека {% else %} Kinoteka {% endif %}</a>
                 </h1>
             </div>
-            <label for="drop" class="toggle">Menu</label>
             <input type="checkbox" id="drop">
             <ul class="menu mt-2">
-                <li class="active"><a href="/">Главная</a></li>
+                <li class="active"><a href="/">{% if LANGUAGE_CODE == 'ru' %} Главная {% else %} Main {% endif %}</a></li>
                 <li>
                     {%if request.user.is_authenticated %}
                         <li> <a href="{% url 'user_profile' %}">{{request.user.username.lower | title}}</a></li>
-                        <li> <a href="{% url 'logout' %}">Выход</a></li>
+                        <li> <a href="{% url 'logout' %}">
+                            {% if LANGUAGE_CODE == 'ru' %} Выход {% else %} SignOut {% endif %}
+                            </a>
+                        </li>
                     {%else%}
-                        <li><a href="{% url 'login' %}">Войти</a></li>
-                        <li><a href="{% url 'register' %}">Регистрация</a></li>
+                        <li><a href="{% url 'login' %}">{% if LANGUAGE_CODE == 'ru' %} Войти {% else %} Signin {% endif %}</a></li>
+                        <li><a href="{% url 'register' %}">{% if LANGUAGE_CODE == 'ru' %} Регистрация {% else %} SignUp {% endif %}</a></li>
                     {%endif%}
                 </li>
                 <li>
-                    <form action="{% url 'set_language' %}" method="post">
+                    <form action="{% url 'set_language' %}" method="post" id="language_form">
                         {% csrf_token %}
                         <input name="next" type="hidden" value="{{ language.code }}/{{ request.get_full_path|slice:'4:' }}">
-                        <select name="language">
-                            {% get_current_language as LANGUAGE_CODE %}
-                            {% get_available_languages as LANGUAGES %}
-                            {% get_language_info_list for LANGUAGES as languages %}
+                        <select name="language" onchange="document.getElementById('language_form').submit();">
+                            
                             {% for language in languages %}
-                                <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %}
-                                        selected{% endif %}>
-                                     {{ language.code }}
+                                <option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %}selected{% endif %}>
+                                    {{ language.name_local }} ({{ language.code }})
                                 </option>
                             {% endfor %}
                         </select>
-                        <input type="submit" value="Go">
                     </form>
                 </li>
             </ul>
@@ -49,6 +50,6 @@
 <!-- //header -->
 <!--/banner-->
 <div class="banner-info">
-    <h3 class="mb-4 editContent" style= "color: rgb(0, 0, 0);">Мир твоего любимого кино</h3>
+    <h3 class="mb-4 editContent" style= "color: rgb(255, 255, 255);">{% if LANGUAGE_CODE == 'ru' %} Мир твоего любимого кино {% else %} The world of your favorite movie {% endif %}</h3>
 </div>
 <!--// banner-inner -->

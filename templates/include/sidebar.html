@@ -1,16 +1,18 @@
-{% load film_tag %}
+{% load i18n film_tag %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_available_languages as LANGUAGES %}
+{% get_language_info_list for LANGUAGES as languages %}
 <div class="search-bar w3layouts-newsletter">
-    <h3 class="sear-head editContent">Поиск фильма</h3>
+    <h3 class="sear-head editContent">{% if LANGUAGE_CODE == 'ru' %} Поиск фильма {% else %} Find movie {% endif %}</h3>
     <form action="{% url 'search' %}" method="get" class="d-flex editContent">
-        <input type="search" placeholder="Введите название..." name="q"
+        <input type="search" placeholder= '{% if LANGUAGE_CODE == 'ru' %} Введите название...  {% else %} Enter Name... {% endif %}'name="q"
                class="form-control" required="">
-        <button type="submit" class="btn1 btn"><span class="fa fa-search"
-                                       aria-hidden="true"></span></button>
+        <button type="submit" class="btn1 btn" ><span style='color: red'; class="fa fa-search" aria-hidden="true"></span></button>
     </form>
 </div>
 <form action="{% url 'filter' %}" method="get">
     <div class="left-side my-4">
-        <h3 class="sear-head editContent">Жанры</h3>
+        <h3 class="sear-head editContent">{% if LANGUAGE_CODE == 'ru' %} Жанры {% else %} Genres {% endif %}</h3>
         <ul class="w3layouts-box-list">
             {% for genre in view.get_genres %}
                 <li class="editContent">
@@ -21,7 +23,7 @@
         </ul>
     </div>
     <div class="left-side">
-        <h3 class="sear-head editContent">Год</h3>
+        <h3 class="sear-head editContent">{% if LANGUAGE_CODE == 'ru' %} Год {% else %} Year {% endif %}</h3>
         <ul class="w3layouts-box-list">
             {% for film in view.get_years %}
                 <li class="editContent">
@@ -31,20 +33,40 @@
             {% endfor %}
         </ul>
     </div>
-    <button type="submit">Найти</button>
-</form>
-<!-- //discounts -->
-<!-- reviews -->
-
-<div class="customer-rev left-side my-4">
-    <h3 class="sear-head editContent">Рейтинг</h3>
-    <ul class="w3layouts-box-list">
-        {% for film in view.get_stars %}
+    <div class="customer-rev left-side my-4">
+        <h3 class="sear-head editContent">{% if LANGUAGE_CODE == 'ru' %} Рейтинг {% else %} Rating {% endif %}</h3>
+        <ul class="w3layouts-box-list">
+            {% for film in view.get_stars %}
+            <li class="editContent">
+                <input type="checkbox" class="checked" name="star" value="{{film.value}}">
+                <span class="span editContent">{{film.value}}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="left-side">
+        <h3 class="sear-head editContent">{% if LANGUAGE_CODE == 'ru' %} Возраст {% else %} Age {% endif %}</h3>
+        <ul class="w3layouts-box-list">
+            {% for film in view.get_rating %}
                 <li class="editContent">
-                    <input type="checkbox" class="checked" name="star" value="{{film.value}}">
-                    <span class="span editContent">{{film.value}}</span>
+                    <input type="checkbox" class="checked" name="rating" value="{{film.rating}}">
+                    <span class="span editContent">{{film.rating}}</span>
                 </li>
-        {% endfor %}
-    </ul>
-</div>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="left-side">
+        <h3 class="sear-head editContent">MPAA</h3>
+        <ul class="w3layouts-box-list">
+            {% for film in view.get_mpaa_rating %}
+                <li class="editContent">
+                    <input type="checkbox" class="checked" name="mpaa_rating" value="{{film.mpaa_rating}}">
+                    <span class="span editContent">{{film.mpaa_rating}}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <button type="submit">{% if LANGUAGE_CODE == 'ru' %} Найти {% else %} Find {% endif %}</button>
+</form>
+
 {% get_last_movies count=5 %}

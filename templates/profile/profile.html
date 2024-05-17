@@ -1,5 +1,6 @@
-<!-- profile/profile.html -->
+
 {% extends 'profile/base.html' %}
+{% load i18n %}
 {% block title %}{{ profile.name}} {{ profile.surname}} {{ profile.lastname}} {% endblock title %}
 {% block container %}
     <div class="container py-md-3">
@@ -13,6 +14,7 @@
 
 {% block profile %}
     <div class="left-ads-display col-lg-8">
+        {% get_current_language as LANGUAGE_CODE %}
         <div class="row">
             <div class="desc1-left col-md-6">
                 <img src="{{ profile.photo.url }}" class="img-fluid" alt="">
@@ -42,22 +44,28 @@
                     </li>
                     <li style="list-style: none">
                         <span><b>Избранное:</b>
-                            {% for film in profile.favorite.all %}
-                                {{ film.title }}
+                            {% for film in profile.get_favorite %}
+                                <a href="{{film.get_absolute_url}}">
+                                    {{ film.name }}
+                                </a>
                             {% endfor %}
                         </span>
                     </li>
                     <li style="list-style: none">
                         <span><b>Просмотренное:</b>
-                            {% for film in profile.views.all %}
-                                {{ film.name }}
+                            {% for film in profile.get_views %}
+                                <a href="{{film.get_absolute_url}}">
+                                    {{ film.name }}
+                                </a>
                             {% endfor %}
                         </span>
                     </li>
                     <li style="list-style: none">
                         <span><b>Оцененное:</b>
                             {% for score in profile.scores.all %}
+                            <a href="{{score.get_absolute_url}}">
                                 {{ score.name }}: {{ score.score }}
+                            </a>
                             {% endfor %}
                         </span>
                     </li>
