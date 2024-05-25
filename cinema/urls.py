@@ -27,4 +27,5 @@ urlpatterns = [
     path("<int:slug>/",views.AddReviewView.as_view(),name = "add_review"), 
     path('<int:film_id>/favorite/', views.AddToFavoriteView.as_view(), name='add_to_favorite'),
     path('<int:film_id>/viewed/', views.MarkAsViewedView.as_view(), name='mark_as_viewed'),
+    path('pdf_film_report/<int:film_id>/', views.generate_film_pdf_report, name='generate_film_pdf_report'),
 ]

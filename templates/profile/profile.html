@@ -1,78 +1,64 @@
-
-{% extends 'profile/base.html' %}
-{% load i18n %}
+{% extends 'base.html' %}
+{% load static %}
 {% block title %}{{ profile.name}} {{ profile.surname}} {{ profile.lastname}} {% endblock title %}
-{% block container %}
-    <div class="container py-md-3">
-{% endblock container %}
 
 
-{% block sidebar %}
-    <div class="side-bar col-lg-4">
-{% endblock sidebar %}
-
-
-{% block profile %}
-    <div class="left-ads-display col-lg-8">
-        {% get_current_language as LANGUAGE_CODE %}
-        <div class="row">
-            <div class="desc1-left col-md-6">
-                <img src="{{ profile.photo.url }}" class="img-fluid" alt="">
-            </div>
-            <div class="desc1-right col-md-6 pl-lg-4">
-                <h3 class="editContent" style="outline: none; cursor: inherit;">
-                    {{ profile.name}} {{ profile.surname}} {{ profile.lastname}}
-                </h3>
-                <ul>
-                    <li style="list-style: none">
-                        <span><b>Логин:</b>
-                            {{profile.login}}
-                        </span>
-                    </li>
-                    <li style="list-style: none">
-                        <span><b>email:</b>
-                            {{profile.email}}
-                        </span>
-                    </li>
-                    <li style="list-style: none">
-                        <span><b>Дата рождения :</b> 
-                            {{ profile.date_of_birth }}
-                        </span>
-                    </li>
-                    <li style="list-style: none">
-                        <span><b>Пол:</b> {{ profile.gender }}</span>
-                    </li>
-                    <li style="list-style: none">
-                        <span><b>Избранное:</b>
-                            {% for film in profile.get_favorite %}
-                                <a href="{{film.get_absolute_url}}">
-                                    {{ film.name }}
-                                </a>
-                            {% endfor %}
-                        </span>
-                    </li>
-                    <li style="list-style: none">
-                        <span><b>Просмотренное:</b>
-                            {% for film in profile.get_views %}
-                                <a href="{{film.get_absolute_url}}">
-                                    {{ film.name }}
-                                </a>
-                            {% endfor %}
-                        </span>
-                    </li>
-                    <li style="list-style: none">
-                        <span><b>Оцененное:</b>
-                            {% for score in profile.scores.all %}
-                            <a href="{{score.get_absolute_url}}">
-                                {{ score.name }}: {{ score.score }}
-                            </a>
-                            {% endfor %}
-                        </span>
-                    </li>
-                </ul>
-                <a href="{% url 'profile_edit' %}" class="btn btn-secondary mt-3">Редактировать профиль</a>
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        {% block sidebar %}
+        <div class="col-md-4 mb-4 mb-md-0">
+            <div class="card h-100">
+                <img src="{{ profile.photo.url }}" class="card-img-top" alt="{{ profile.name }}'s Photo">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title mb-3">{{ profile.name }} {{ profile.surname }} {{ profile.lastname }}</h5>
+                    <p class="card-text mb-auto">
+                        <b>Логин:</b> {{ profile.login }}<br>
+                        <b>Email:</b> {{ profile.email }}<br>
+                        <b>Дата рождения:</b> {{ profile.date_of_birth }}<br>
+                        <b>Пол:</b> {{ profile.gender }}
+                    </p>
+                    <a href="{% url 'profile_edit' %}" class="btn btn-primary mt-auto">Редактировать профиль</a>
+                    <a href="{% url 'generate_pdf_report' profile.id %}" class="btn btn-secondary mt-2">Сгенерировать отчёт в PDF</a>
+                </div>
             </div>
         </div>
-    </div>
-{% endblock profile %}
+        {% endblock sidebar %}
 
+        {% block profile %}
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row row-cols-1 row-cols-md-3">
+                        <div class="col mb-4">
+                            <h6 class="mb-3">Избранное:</h6>
+                            <ul class="list-group list-group-flush">
+                                {% for film in profile.get_favorite %}
+                                    <li class="list-group-item"><a href="{{ film.get_absolute_url }}">{{ film.name }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col mb-4">
+                            <h6 class="mb-3">Просмотренное:</h6>
+                            <ul class="list-group list-group-flush">
+                                {% for film in profile.get_views %}
+                                    <li class="list-group-item"><a href="{{ film.get_absolute_url }}">{{ film.name }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col mb-4">
+                            <h6 class="mb-3">Оцененное:</h6>
+                            <ul class="list-group list-group-flush">
+                                {% for score in profile.get_scores %}
+                                    <li class="list-group-item"><a href="{{ score.film.get_absolute_url }}">{{ score.film }} </a><a>- {{ score.star.value }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock profile %}
+    </div>
+</div>
+{% endblock content %}

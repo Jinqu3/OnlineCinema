@@ -1,5 +1,5 @@
 {% extends 'films/base.html' %}
-{% load i18n %}
+{% load i18n film_tag %}
 {% block title %} {{ film.name }} ({{film.year}}){% endblock title %}
 {% block header %} {% endblock header %}
 {% block container %}
@@ -16,11 +16,17 @@
         <div class="row">
             <div class="desc1-left col-md-6">
                 <img src="{{ film.poster.url|default_if_none:'#' }}" class="img-fluid" alt="">
+                <a href="{{ film.video_url }}" target="_blank" class="btn btn-primary mt-2">
+                    {% if LANGUAGE_CODE == 'ru' %} Посмотреть фильм {% else %} Watch Movie {% endif %}
+                </a>
+                <a href="{{ film.trailer_url }}" target="_blank" class="btn btn-secondary mt-2">
+                    {% if LANGUAGE_CODE == 'ru' %} Посмотреть трейлер {% else %} Watch Trailer {% endif %}
+                </a>
+                <a href="{% url 'generate_film_pdf_report' film.id %}" class="btn btn-secondary mt-2">Сгенерировать отчёт в PDF</a>
             </div>
             <div class="desc1-right col-md-6 pl-lg-4">
                 <h3 class="editContent" style="outline: none; cursor: inherit;">
                     {{ film.name }} ({{film.year}})
-                    
                 </h3>
                 <h5 class="editContent">{{ film.name_en }}</h5>
                 <ul>
@@ -31,7 +37,7 @@
                     <li style="list-style: none">
                         <span><b>{% if LANGUAGE_CODE == 'ru' %} Страна: {% else %} Country: {% endif %}</b> 
                             {% for country in film.countries.all %}
-                                {{ country.name }}
+                                {{ country.name }}{% if not forloop.last %} , {% else %}. {% endif %}
                             {% endfor %}
                         </span>
                     </li>
@@ -43,7 +49,7 @@
                             {% for film_member_post in film.filmmemberpost_set.all %}
                                 {% if film_member_post.post.name == 'Режиссёр' or film_member_post.post.name == 'Director' %}
                                     <a href="{{ film_member_post.member.get_absolute_url }}"> 
-                                        {{ film_member_post.member.name }} {{ film_member_post.member.surname }} {{ film_member_post.member.last_name }}
+                                        {{ film_member_post.member.name }} {{ film_member_post.member.surname }} {{ film_member_post.member.last_name }}{% if not forloop.last %} , {% else %}. {% endif %}
                                     </a>
                                 {% endif %}
                             {% endfor %}
@@ -54,18 +60,19 @@
                             {% for film_member_post in film.filmmemberpost_set.all %}
                                 {% if film_member_post.post.name == 'Оператор' or film_member_post.post.name == 'Operator' %}
                                     <a href="{{ film_member_post.member.get_absolute_url }}"> 
-                                        {{ film_member_post.member.name }} {{ film_member_post.member.surname }} {{ film_member_post.member.last_name }}
+                                        {{ film_member_post.member.name }} {{ film_member_post.member.surname }} {{ film_member_post.member.last_name }}{% if not forloop.last %} , {% else %}. {% endif %}
                                     </a>
+                                    
                                 {% endif %}
                             {% endfor %}
                         </span>
                     </li>
                     <li style="list-style: none">
-                        <span><b>{% if LANGUAGE_CODE == 'ru' %} Сценарий: {% else %} Scenario: {% endif %}:</b>
+                        <span><b>{% if LANGUAGE_CODE == 'ru' %} Сценарий: {% else %} Scenario: {% endif %}</b>
                             {% for film_member_post in film.filmmemberpost_set.all %}
                                 {% if film_member_post.post.name == 'Сценарист' or film_member_post.post.name == 'Scenarist' %}
                                     <a href="{{ film_member_post.member.get_absolute_url }}"> 
-                                        {{ film_member_post.member.name }} {{ film_member_post.member.surname }} {{ film_member_post.member.last_name }}
+                                        {{ film_member_post.member.name }} {{ film_member_post.member.surname }} {{ film_member_post.member.last_name }}{% if not forloop.last %} , {% else %}. {% endif %}
                                     </a>
                                 {% endif %}
                             {% endfor %}
@@ -76,7 +83,7 @@
                             {% for film_member_post in film.filmmemberpost_set.all %}
                                 {% if film_member_post.post.name == 'Композитор' or film_member_post.post.name == 'Compositor' %}
                                     <a href="{{ film_member_post.member.get_absolute_url }}"> 
-                                        {{ film_member_post.member.name }} {{ film_member_post.member.surname }} {{ film_member_post.member.last_name }}
+                                        {{ film_member_post.member.name }} {{ film_member_post.member.surname }} {{ film_member_post.member.last_name }}{% if not forloop.last %} , {% else %}. {% endif %}
                                     </a>
                                 {% endif %}
                             {% endfor %}
@@ -87,7 +94,7 @@
                             {% for film_member_post in film.filmmemberpost_set.all %}
                                 {% if film_member_post.post.name == 'Актёр' or film_member_post.post.name == 'Actor'%}
                                     <a href="{{ film_member_post.member.get_absolute_url }}"> 
-                                        {{ film_member_post.member.name }} {{ film_member_post.member.surname }} {{ film_member_post.member.last_name }}
+                                        {{ film_member_post.member.name }} {{ film_member_post.member.surname }} {{ film_member_post.member.last_name }}{% if not forloop.last %} , {% else %}. {% endif %}
                                     </a>
                                 {% endif %}
                             {% endfor %}
@@ -96,7 +103,7 @@
                     <li style="list-style: none">
                         <span><b>{% if LANGUAGE_CODE == 'ru' %} Жанр: {% else %} Genres: {% endif %}</b>
                         {% for genre in film.genres.all %}
-                            {{ genre.name }}
+                            {{ genre.name }}{% if not forloop.last %} , {% else %}. {% endif %}
                         {% endfor %}
                         </span>
                     </li>
@@ -114,7 +121,6 @@
                     </li>
                     <li style="list-style: none">   
                         <span><b>{% if LANGUAGE_CODE == 'ru' %} Рейтинг: {% else %} Rating: {% endif %} </b>{{film.get_average_rating}}</span>
-                        <span><b>{% if LANGUAGE_CODE == 'ru' %} Ваша оценка: {% else %} Your rate: {% endif %} </b></span>
                     </li>
                     <li>
                         <form action="{% url 'add_rating' film.url %}" method="post" name="rating">
@@ -125,17 +131,25 @@
                                     <label for="rating{{ v }}">{{ k }}</label>
                                 {% endfor %}
                             </span>
-                            <button type="submit">{% if LANGUAGE_CODE == 'ru' %} Оставить оценку {% else %} Leave a rating {% endif %}</button>
                         </form>
+                        <script>
+                            const ratingInputs = document.querySelectorAll('input[name="star"]');
+                            const ratingForm = document.querySelector('form[name="rating"]');
+                            ratingInputs.forEach(input => {
+                                input.addEventListener('click', () => {
+                                    ratingForm.submit();
+                                });
+                            });
+                        </script>
                     </li>
                     <li>
                         <form action="{% url 'add_to_favorite' film.id %}" method="post">
-                            {% csrf_token %}
-                            <button type="submit">
-                                {% if film in request.user.get_favorite %}
-                                {% if LANGUAGE_CODE == 'ru' %} Удалить из избранного {% else %} Delete Favorite {% endif %}
+                            {% csrf_token %}                            
+                            <button type="submit" class="btn btn-outline-danger">
+                                {% if film in user.get_favorite %}
+                                    {% if LANGUAGE_CODE == 'ru' %} Удалить из избранного {% else %} Delete Favorite {% endif %}
                                 {% else %}
-                                {% if LANGUAGE_CODE == 'ru' %} Добавить в избранное {% else %} Add Favorite {% endif %}
+                                    {% if LANGUAGE_CODE == 'ru' %} Добавить в избранное {% else %} Add Favorite {% endif %}
                                 {% endif %}
                             </button>
                         </form>
@@ -143,8 +157,8 @@
                     <li>
                         <form action="{% url 'mark_as_viewed' film.id %}" method="post">
                             {% csrf_token %}                        
-                            <button type="submit">  
-                                {% if film in request.user.get_favorite %}
+                            <button type="submit" class="btn btn-outline-primary">  
+                                {% if film in user.get_views %}
                                     {% if LANGUAGE_CODE == 'ru' %} Удалить из просмотренного {% else %} Delete Viewed {% endif %}
                                 {% else %}
                                     {% if LANGUAGE_CODE == 'ru' %} Добавить в просмотренное {% else %} Add Viewed {% endif %}
@@ -167,7 +181,6 @@
                 {{ film.description|safe }}
             </p>
         </div>  
-        <hr>
         <div class="row">
             <div class="single-form-left">
                 <div class="contact-single">
@@ -182,10 +195,11 @@
                             <label for="contactcomment" class="editContent"
                                 {% if LANGUAGE_CODE == 'ru' %} Ваш комментарий * {% else %} Your Comment {% endif %}
                             </label>
-                            <textarea class="form-control border" rows="5" name="text"
+                            <textarea class="form-control-review border" rows="5" name="text"
                                     id="contactcomment" required=""></textarea>
                         </div>
                         <button type="submit"
+                                name="submit_review"
                                 class="mt-3 btn btn-success btn-block py-3"
                                 style="outline: none; cursor: inherit;">
                                 {% if LANGUAGE_CODE == 'ru' %} Отправить {% else %} Send {% endif %}
@@ -201,15 +215,22 @@
                 <div class="media-body mt-4">
                     <h5 class="mt-0 editContent"
                         style="outline: none; cursor: inherit;">
-                        {{ review.user.login }}
+                        {{ review.user.name }} {{ review.user.surname }} ({{review.user.login}})
                     </h5>
                     <p class="mt-2 editContent">
                         {{ review.text }}
-                    </p>
+                    </p>                    
+                    {% if request.user.is_authenticated and review.user == request.user.user or request.user.is_superuser %}
+                        <form action="{% url 'add_review' film.id %}" method="post">
+                            {% csrf_token %}
+                            <!-- <button type="submit" name="edit_review" value="{{ review.review_id }}">Редактировать</button> -->
+                            <button class="btn btn-delete" type="submit" name="delete_review" value="{{ review.review_id }}">Удалить</button>
+                        </form>
+                    {% endif %}
                 </div>
+                
             </div>
         {% endfor %}    
-        </div>
     <div class="grid-img-right mt-4 text-right bg bg1" >
         {% include 'include/pagination.html' %}
     </div>

@@ -22,23 +22,4 @@ class TestViews(TestCase):
         self.assertEqual(response.status_code,200)
         self.assertTemplateUsed(response,"films/film_detail.html")
 
-    
-    # def test_film_detail_POST_add_new_review(self):
-    #     user = User.objects.create(
-    #         name = "name",
-    #         surname = "surname",
-    #         login = "user",
-    #         email = "email",
-    #         password = "password"
-    #     )
-        
-    #     Review.objects.create(
-    #         user = user,
-    #         film = self.film,
-    #         text = "text"
-    #     )
-
-    #     response = self.client.post(self.detail_url)
-
-    #     self.assertEqual(response.status_code,302)
-    #     self.assertEqual(self.film.reviews.first().film,self.film)
+   

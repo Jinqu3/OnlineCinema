@@ -62,6 +62,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'OnlineCinema.urls'
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -154,6 +155,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
+
 
 
 CKEDITOR_BASEPATH = "/my_static/ckeditor/ckeditor/"

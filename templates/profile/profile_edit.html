@@ -1,56 +1,23 @@
-{% extends 'profile/base.html' %}
-{% block title %} Редактирование профиля {% endblock title %}
+{% extends 'base.html' %}
+{% load static %}
 
-{% block sidebar %}
-    <div class="side-bar col-lg-4">
-{% endblock sidebar %}
-
-{% block profile %}
-<div class="left-ads-display col-lg-8">
-    <div class="row">
-        <div class="desc1-left col-md-6">
-            <img src='{{profile.photo.url}}' class="img-fluid" alt="">
-        </div>
-        <div class="desc1-right col-md-6 pl-lg-4">
-            <h3 class="editContent">Редактирование профиля</h3>
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="id_name">Имя:</label>
-                    <input type="text" class="form-control" id="id_name" name="name" value="{{ profile.name }}">
-                    {{profile.name}}
+{% block content %}
+<div class="container py-5 d-flex justify-content-center align-items-center">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="text-center mb-4">Редактировать профиль</h1>
+                    <form method="post" enctype="multipart/form-data" class="mx-auto">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Сохранить</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label for="id_surname">Фамилия:</label>
-                    <input type="text" class="form-control" id="id_surname" name="surname" value="{{ profile.surname }}">
-                    {{profile.surname}}
-                </div>
-                <div class="form-group">
-                    <label for="id_lastname">Отчество (Опционально):</label>
-                    <input type="text" class="form-control" id="id_lastname" name="lastname" value="{{ profile.lastname }}">
-                    {{profile.lastname }}
-                </div>
-                <div class="form-group">
-                    <label for="id_date_of_birth">Дата рождения:</label>
-                    <input type="date" class="form-control" id="id_date_of_birth" name="date_of_birth" value="{{ profile.date_of_birth|date:'Y-m-d' }}">
-                    {{profile.date_of_birth}}
-                </div>
-                <div class="form-group">
-                    <label for="id_gender">Пол:</label>
-                    <select class="form-control" id="id_gender" name="gender">
-                        {% for gender_option in profile.GENDERS %}
-                            {{gender_option}}
-                        {% endfor %}
-                    </select>
-                    {{profile.gender}}
-                </div>
-                <div class="form-group">
-                    <label for="id_photo">Фото:</label>
-                    <input type="file" class="form-control-file" id="id_photo" name="photo">
-                </div>
-                <button type="submit" class="btn btn-primary">Сохранить изменения</button>
-            </form>
+            </div>
         </div>
     </div>
 </div>
-{% endblock profile %}
+{% endblock %}

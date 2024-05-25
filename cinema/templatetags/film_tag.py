@@ -11,3 +11,7 @@ def get_last_movies(count=5):
 @register.filter(name='add_class')
 def add_class(field, css_class):
     return field.as_widget(attrs={'class': css_class})
+
+@register.filter
+def get_favorite(user):
+    return user.get_favorite()

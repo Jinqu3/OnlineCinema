@@ -389,7 +389,7 @@ li > a:only-child:after {
     -ms-background-size: cover;
     background-size: cover;
     position: relative;
-    min-height: 50em;
+    min-height: 40em;
 }
 
 .main-banner.inner {
@@ -626,8 +626,8 @@ ul.tic-info li {
 span.money {
     font-size: 1em;
     font-weight: 800;
-    color: #ff4c4c;
-    letter-spacing: 2px;
+    color: #b60707;
+    letter-spacing: 1px;
 }
 
 .product_price {
@@ -1388,7 +1388,7 @@ a.move-top span {
 
 @media (max-width: 1366px) {
     .main-banner {
-        min-height: 45em;
+        min-height: 48em;
     }
 
     .banner-info {
@@ -1422,7 +1422,7 @@ a.move-top span {
     }
 
     .main-banner {
-        min-height: 38em;
+        min-height: 20em;
     }
 
     h3.tittle {

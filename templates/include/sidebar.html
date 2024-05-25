@@ -47,7 +47,7 @@
     <div class="left-side">
         <h3 class="sear-head editContent">{% if LANGUAGE_CODE == 'ru' %} Возраст {% else %} Age {% endif %}</h3>
         <ul class="w3layouts-box-list">
-            {% for film in view.get_rating %}
+            {% for film in view.get_rating.distinct %}
                 <li class="editContent">
                     <input type="checkbox" class="checked" name="rating" value="{{film.rating}}">
                     <span class="span editContent">{{film.rating}}</span>
@@ -58,7 +58,7 @@
     <div class="left-side">
         <h3 class="sear-head editContent">MPAA</h3>
         <ul class="w3layouts-box-list">
-            {% for film in view.get_mpaa_rating %}
+            {% for film in view.get_mpaa_rating.distinct %}
                 <li class="editContent">
                     <input type="checkbox" class="checked" name="mpaa_rating" value="{{film.mpaa_rating}}">
                     <span class="span editContent">{{film.mpaa_rating}}</span>
@@ -66,7 +66,6 @@
             {% endfor %}
         </ul>
     </div>
-    <button type="submit">{% if LANGUAGE_CODE == 'ru' %} Найти {% else %} Find {% endif %}</button>
+    <button type="submit" class="btn btn-outline-secondary">{% if LANGUAGE_CODE == 'ru' %} Найти {% else %} Find {% endif %}</button>
 </form>
-
-{% get_last_movies count=5 %}
+{% get_last_movies count=3 %}

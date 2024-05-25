@@ -12,7 +12,7 @@ class TestForms(TestCase):
             'email':'email',
             'name': 'name',
             'surname':'surname',
-            'lastname':'lastname'
+            'lastname':'lastname',
         })
 
         self.assertTrue(form.is_valid())

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Film,Genre,Category,Country,Photo,Member,FilmMemberPost,Review,Score,User,Post,ScoreStar
+from .models import Film,Genre,Country,Photo,Member,FilmMemberPost,Review,Score,User,Post,ScoreStar
 from modeltranslation.admin import TranslationAdmin
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django import forms
@@ -48,12 +48,6 @@ class ReviewAdmin(admin.ModelAdmin):
 class GenreAdmin(TranslationAdmin):
     """Жанры"""
     list_display = ("name",)
-
-@admin.register(Category)
-class CategoryAdmin(TranslationAdmin):
-    """Категории"""
-    list_display = ("name", "description")
-    list_display_links = ("name",)
 
 @admin.register(Genre)
 class GenreAdmin(TranslationAdmin):

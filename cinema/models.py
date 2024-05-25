@@ -12,8 +12,8 @@ class User(models.Model):
 
     MALE = 'Mужчина'
     FEMALE = 'Женщина'
-    MALE_EN = ''
-    FEMALE_EN = 'Женщина'
+    MALE_EN = 'Man'
+    FEMALE_EN = 'Woman'
     GENDERS = [
         (MALE,'Мужчина'),
         (FEMALE,'Женщина'),
@@ -45,6 +45,10 @@ class User(models.Model):
     
     def get_favorite(self):
         return self.favorite.all()
+    
+    def get_scores(self):
+        return self.score_set.all()    
+    
 
     class Meta:
 
@@ -54,27 +58,6 @@ class User(models.Model):
         managed = True
         db_table = '_user'
 
-
-    
-
-"""
-Категория
-"""
-class Category(models.Model):
-    name = models.CharField(max_length=30, blank=True)
-    description = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return self.name
-
-
-    class Meta:
-
-        verbose_name = "Категория"
-        verbose_name_plural = "Категории"
-
-        managed = True
-        db_table = 'category'
 
 
 """
@@ -136,7 +119,6 @@ class Member(models.Model):
     gender = models.CharField(max_length=7,choices=GENDERS)
     photo = models.ImageField(upload_to="members/",default="members/default_member_image.jpeg",null=True,blank = True)
     url = models.SlugField(max_length=256,unique=True, blank=False, null=True)
-
     members_posts = models.ManyToManyField("Post",through="FilmMemberPost",related_name="posts")
 
     def __str__(self):
@@ -197,15 +179,15 @@ class Film(models.Model):
     url = models.SlugField(max_length=256,unique=True, blank=False, null=True)
     video = models.FileField(upload_to='video/',validators = [FileExtensionValidator(allowed_extensions=['mp4'])],blank=True,null=True)  
 
-
+    
     countries = models.ManyToManyField("Country",related_name="film_countries")
     genres = models.ManyToManyField("Genre",related_name="film_genres")
-    categories = models.ManyToManyField("Category",related_name="film_categories")
     members = models.ManyToManyField("Member",through="FilmMemberPost",related_name="film_members")
     members_posts = models.ManyToManyField("Post",through="FilmMemberPost",related_name="film_member_posts")
-    reviews = models.ManyToManyField("User",through="Review",related_name="film_reviews")
+    reviews = models.ManyToManyField("User",through="Review",related_name="user_reviews")
+    user_favorite = models.ManyToManyField("User",related_name="film_favorite",blank=True)
     user_scores = models.ManyToManyField("User",through="Score",related_name="film_scores",blank=True)
-    user_views = models.ManyToManyField("User",related_name="film_viewed",blank=True)
+    user_views = models.ManyToManyField("User",related_name="viewed",blank=True)
 
     def __str__(self):
         return self.name
@@ -218,9 +200,18 @@ class Film(models.Model):
     
     def get_video(self):
         return self.video
+
+    def get_review_count(self):
+        return self.reviews.count()  
+
+    def get_score_count(self):
+        return self.user_scores.count() 
     
-    def get_user_score(self,user):
-        return self.user_scores.filter(user=user)
+    def get_favorites_count(self):
+        return self.user_favorite.count()
+
+    def get_watched_count(self):
+        return self.user_views.count()
 
     def get_average_rating(self):
         average_rating = self.score_set.aggregate(Avg('star__value')).get('star__value__avg')
@@ -298,6 +289,8 @@ class Score(models.Model):
     user = models.ForeignKey("User",on_delete= models.CASCADE)
     star = models.ForeignKey("ScoreStar",on_delete= models.CASCADE)
     
+    def __str__(self):
+        return f"{self.film.name}: {self.star}"
 
     class Meta:
 

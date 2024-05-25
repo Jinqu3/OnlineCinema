@@ -3,7 +3,7 @@
 {% block title %}{% if LANGUAGE_CODE == 'ru' %} Регистрация {% else %} SingUp {% endif %}{% endblock title %}
 {% block header %}{% endblock header %}
 {% block authorization %}
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 10vh;">
     <div class="card p-4 shadow" style="max-width: 500px; width: 100%;">
         {% get_current_language as LANGUAGE_CODE %}
         <h2 class="text-center mb-4">{% if LANGUAGE_CODE == 'ru' %} Регистрация {% else %} SignUp {% endif %}</h2>

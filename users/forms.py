@@ -40,7 +40,10 @@ class RegisterForm(UserCreationForm):
 
         return user
     
-class UserProfileUpdateForm(forms.ModelForm):
+class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['name', 'surname', 'lastname', 'date_of_birth', 'gender', 'photo']
+        widgets = {
+            'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
+        }

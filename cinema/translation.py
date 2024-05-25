@@ -1,10 +1,5 @@
 from modeltranslation.translator import register, TranslationOptions
-from .models import Category, Member,Film, Genre, Photo,Country,Post
-
-
-@register(Category)
-class CategoryTranslationOptions(TranslationOptions):
-    fields = ('name', 'description')
+from .models import Member,Film, Genre, Photo,Country,Post
 
 @register(Country)
 class CountryTranslationOptions(TranslationOptions):

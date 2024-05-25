@@ -622,6 +622,7 @@ ul.tic-info li {
     font-weight: 700;
 }
 
+
 span.money {
     font-size: 1em;
     font-weight: 800;
@@ -811,6 +812,8 @@ li.breadcrumb-item {
 li.breadcrumb-item a {
     color: #ff4c4c;
 }
+
+
 
 /*--//breadcrumbr--*/
 /*--/shop--*/
@@ -1246,7 +1249,7 @@ a.move-top span {
 
 @media(max-width:1366px) {
     .main-banner {
-        min-height: 45em;
+        min-height: 48em;
     }
 
     .banner-info {
