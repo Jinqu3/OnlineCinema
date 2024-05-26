@@ -69,12 +69,13 @@ def user_profile(request):
 
 @login_required
 def profile_edit(request):
-    user_instance = request.user
+    user_instance = User.objects.get(user = request.user)
     if request.method == 'POST':
         form = UserProfileForm(request.POST, request.FILES, instance=user_instance)
         if form.is_valid():
+            messages.success(request, f'Профиль успешно изменён')
             form.save()
-            return render(request, 'profile/profile_edit.html')
+            return render(request, 'profile/profile_edit.html', {'form': form})
     else:
         form = UserProfileForm(instance=user_instance)
     return render(request, 'profile/profile_edit.html', {'form': form})

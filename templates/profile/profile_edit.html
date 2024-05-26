@@ -1,23 +1,40 @@
-{% extends 'base.html' %}
-{% load static %}
-
+{% extends 'profile/base.html' %}
+{% load i18n film_tag %}
+{% block title %}{% if LANGUAGE_CODE == 'ru' %} Редактирование профиля {% else %} Edit Profile {% endif %}{% endblock title %}
+{% block header %}{% endblock header %}
 {% block content %}
-<div class="container py-5 d-flex justify-content-center align-items-center">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h1 class="text-center mb-4">Редактировать профиль</h1>
-                    <form method="post" enctype="multipart/form-data" class="mx-auto">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Сохранить</button>
-                        </div>
-                    </form>
-                </div>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 20vh;">
+    <div class="card p-4 shadow" style="max-width: 400px; width: 100%;">
+        {% get_current_language as LANGUAGE_CODE %}
+        <h2 class="text-center mb-4">{% if LANGUAGE_CODE == 'ru' %} Редактирование профиля {% else %} Edit Profile {% endif %}</h2>
+        <form method="post" enctype="multipart/form-data"> 
+            {% csrf_token %}
+            <div class="form-group mb-3">
+                <label for="{{ form.name.id_for_label }}">{% if LANGUAGE_CODE == 'ru' %} Имя {% else %} Name {% endif %}</label>
+                {{ form.name }} 
             </div>
-        </div>
+            <div class="form-group mb-3">
+                <label for="{{ form.surname.id_for_label }}">{% if LANGUAGE_CODE == 'ru' %} Фамилия {% else %} Surname {% endif %}</label>
+                {{ form.surname }} 
+            </div>
+            <div class="form-group mb-3">
+                <label for="{{ form.lastname.id_for_label }}">{% if LANGUAGE_CODE == 'ru' %} Отчество {% else %} Lastname {% endif %}</label>
+                {{ form.lastname }} 
+            </div>
+            <div class="form-group mb-3">
+                <label for="{{ form.date_of_birth.id_for_label }}">{% if LANGUAGE_CODE == 'ru' %} Дата рождения {% else %} Date of Birth {% endif %}</label>
+                {{ form.date_of_birth }} 
+            </div>
+            <div class="form-group mb-3">
+                <label for="{{ form.gender.id_for_label }}">{% if LANGUAGE_CODE == 'ru' %} Пол {% else %} Gender {% endif %}</label>
+                {{ form.gender }} 
+            </div>
+            <div class="form-group mb-3">
+                <label for="{{ form.photo.id_for_label }}">{% if LANGUAGE_CODE == 'ru' %} Фото профиля {% else %} Profile photo {% endif %}</label>
+                {{ form.photo }} 
+            </div>
+            <button type="submit" class="btn btn-danger btn-block">{% if LANGUAGE_CODE == 'ru' %} Сохранить {% else %} Save {% endif %}</button>
+        </form>
     </div>
 </div>
 {% endblock %}

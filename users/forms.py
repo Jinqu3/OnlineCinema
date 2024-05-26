@@ -43,7 +43,12 @@ class RegisterForm(UserCreationForm):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['name', 'surname', 'lastname', 'date_of_birth', 'gender', 'photo']
+        fields = ['name', 'surname', 'lastname', 'date_of_birth', 'gender', 'photo'] 
         widgets = {
-            'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
+            'name': forms.TextInput(attrs={'class': 'form-control mx-auto'}),
+            'surname': forms.TextInput(attrs={'class': 'form-control mx-auto'}),
+            'lastname': forms.TextInput(attrs={'class': 'form-control mx-auto'}),
+            'date_of_birth': forms.DateInput(attrs={'class': 'form-control mx-auto', 'type': 'date'}),
+            'gender': forms.Select(attrs={'class': 'form-control mx-auto'}), 
+            'photo': forms.FileInput(attrs={'class': 'form-control mx-auto'}), 
         }

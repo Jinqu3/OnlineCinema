@@ -14,16 +14,16 @@
             <ul class="menu mt-2">
                 <li class="active"><a href="/">{% if LANGUAGE_CODE == 'ru' %} Главная {% else %} Main {% endif %}</a></li>
                 <li>
-                    {%if request.user.is_authenticated %}
-                        <li> <a href="{% url 'user_profile' %}">{{request.user.username.lower | title}}</a></li>
+                    {% if request.user.is_authenticated %}
+                        <li> <a href="{% url 'profile' %}">{{request.user.username.lower | title}}</a></li>
                         <li> <a href="{% url 'logout' %}">
                             {% if LANGUAGE_CODE == 'ru' %} Выход {% else %} SignOut {% endif %}
                             </a>
                         </li>
-                    {%else%}
+                    {% else %}
                         <li><a href="{% url 'login' %}">{% if LANGUAGE_CODE == 'ru' %} Войти {% else %} Signin {% endif %}</a></li>
                         <li><a href="{% url 'register' %}">{% if LANGUAGE_CODE == 'ru' %} Регистрация {% else %} SignUp {% endif %}</a></li>
-                    {%endif%}
+                    {% endif %}
                 </li>
                 <li>
                     <form action="{% url 'set_language' %}" method="post" id="language_form">

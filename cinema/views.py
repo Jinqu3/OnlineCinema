@@ -3,7 +3,7 @@ from django.shortcuts import render,redirect,HttpResponse
 from django.views.generic.base import View
 from django.views.generic import ListView,DetailView
 from django.db.models import Q
-from .models import Film,Member,Genre,Score,User,ScoreStar,Review
+from .models import Film,Member,Genre,Score,User,ScoreStar,Review,Country
 from .forms import ReviewForm,RatingForm, FavoriteForm, ViewedForm
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -20,6 +20,10 @@ from django.http import HttpResponse
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+
+from django.db.models import Q, Func, F, DecimalField
+from django.db.models.functions import Round
+
 class GenreYear:
 
     def get_genres(self):
@@ -31,13 +35,14 @@ class GenreYear:
     def get_stars(self):
         return ScoreStar.objects.all().values("value")
     
-    def get_rating(self):
-        return Film.objects.all().values("rating")
+    def get_ages(self):
+        return Film.objects.all().values("age")
     
     def get_mpaa_rating(self):
         return Film.objects.all().values("mpaa_rating")
     
-
+    def get_countries(self):
+        return Country.objects.all()
 
 class MovieView(GenreYear,ListView):
     model = Film
@@ -77,20 +82,27 @@ class FilterMovieView(GenreYear, ListView):
     paginate_by = 1
 
     def get_queryset(self):
-        queryset = Film.objects.filter(
-            Q(year__in=self.request.GET.getlist("year")) |
-            Q(genres__in=self.request.GET.getlist("genre"))|
-            Q(rating__in=self.request.GET.getlist("rating")) |
-            Q(mpaa_rating__in=self.request.GET.getlist("mpaa_rating"))
+        queryset = Film.objects.annotate(
+                rounded_rating=Round('rating', 0, output_field=DecimalField())
+            ).filter(
+            Q(year__in=self.request.GET.getlist("year")) if self.request.GET.getlist("year") else Q(),
+            Q(genres__in=self.request.GET.getlist("genre")) if self.request.GET.getlist("genre") else Q(),
+            Q(rounded_rating__in=self.request.GET.getlist("star")) if self.request.GET.getlist("star") else Q(),
+            Q(mpaa_rating__in=self.request.GET.getlist("mpaa_rating")) if self.request.GET.getlist("mpaa_rating") else Q(),
+            Q(countries__in=self.request.GET.getlist("country")) if self.request.GET.getlist("country") else Q()
         ).distinct()
+
+
         return queryset
     
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context["year"] = ''.join([f"year={x}&" for x in self.request.GET.getlist("year")])
         context["genre"] = ''.join([f"genre={x}&" for x in self.request.GET.getlist("genre")])
-        context["rating"] = ''.join([f"rating={x}&" for x in self.request.GET.getlist("rating")])
+        context["rating"] = ''.join([f"rating={x}&" for x in self.request.GET.getlist("star")])
         context["mpaa_rating"] = ''.join([f"mpaa_rating={x}&" for x in self.request.GET.getlist("mpaa_rating")])
+        context["country"] = ''.join([f"country={x}&" for x in self.request.GET.getlist("country")])
+
         return context
 
 
@@ -134,7 +146,7 @@ class AddStarRating(View):
     def post(self, request, slug):
         form = RatingForm(request.POST)
         film = get_object_or_404(Film, url=slug)
-
+    
         if form.is_valid():
             if request.user.is_authenticated:
                 user = User.objects.get(user=request.user)
@@ -143,6 +155,8 @@ class AddStarRating(View):
                     film=film,
                     defaults={'star': form.cleaned_data['star']}
                 )
+                film.rating = film.get_average_rating()
+                film.save()
         return redirect(film.get_absolute_url()) 
     
 class AddReviewView(View):

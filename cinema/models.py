@@ -47,7 +47,7 @@ class User(models.Model):
         return self.favorite.all()
     
     def get_scores(self):
-        return self.score_set.all()    
+        return self.score_set.all()
     
 
     class Meta:
@@ -173,11 +173,12 @@ class Film(models.Model):
     budjet = models.IntegerField(blank=True, null=True)
     gross = models.IntegerField(blank=True, null=True)
     duration = models.CharField(max_length=3,blank=True, null=True)
-    rating = models.CharField(max_length=3,blank=True, null=True)
+    age = models.CharField(max_length=3,blank=True, null=True)
     mpaa_rating = models.CharField(max_length=5, blank=True, null=True)
     trailer_url = models.CharField(max_length=256, blank=True, null=True)
     url = models.SlugField(max_length=256,unique=True, blank=False, null=True)
     video = models.FileField(upload_to='video/',validators = [FileExtensionValidator(allowed_extensions=['mp4'])],blank=True,null=True)  
+    rating = models.DecimalField(max_digits = 2,decimal_places=1,blank=True,null=True)
 
     
     countries = models.ManyToManyField("Country",related_name="film_countries")

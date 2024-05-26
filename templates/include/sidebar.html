@@ -12,7 +12,7 @@
 </div>
 <form action="{% url 'filter' %}" method="get">
     <div class="left-side my-4">
-        <h3 class="sear-head editContent">{% if LANGUAGE_CODE == 'ru' %} Жанры {% else %} Genres {% endif %}</h3>
+        <h3 class="sear-head editContent">{% if LANGUAGE_CODE == 'ru' %} Жанр {% else %} Genre {% endif %}</h3>
         <ul class="w3layouts-box-list">
             {% for genre in view.get_genres %}
                 <li class="editContent">
@@ -23,9 +23,20 @@
         </ul>
     </div>
     <div class="left-side">
+        <h3 class="sear-head editContent">{% if LANGUAGE_CODE == 'ru' %} Страна {% else %} Country {% endif %}</h3>
+        <ul class="w3layouts-box-list">
+            {% for country in view.get_countries %}
+                <li class="editContent">
+                    <input type="checkbox" class="checked" name="country" value="{{country.id}}">
+                    <span class="span editContent">{{country.name}}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="left-side">
         <h3 class="sear-head editContent">{% if LANGUAGE_CODE == 'ru' %} Год {% else %} Year {% endif %}</h3>
         <ul class="w3layouts-box-list">
-            {% for film in view.get_years %}
+            {% for film in view.get_years.distinct %}
                 <li class="editContent">
                     <input type="checkbox" class="checked" name="year" value="{{film.year}}">
                     <span class="span editContent">{{film.year}}</span>
@@ -47,10 +58,10 @@
     <div class="left-side">
         <h3 class="sear-head editContent">{% if LANGUAGE_CODE == 'ru' %} Возраст {% else %} Age {% endif %}</h3>
         <ul class="w3layouts-box-list">
-            {% for film in view.get_rating.distinct %}
+            {% for film in view.get_ages.distinct %}
                 <li class="editContent">
-                    <input type="checkbox" class="checked" name="rating" value="{{film.rating}}">
-                    <span class="span editContent">{{film.rating}}</span>
+                    <input type="checkbox" class="checked" name="age" value="{{film.age}}">
+                    <span class="span editContent">{{film.age}}</span>
                 </li>
             {% endfor %}
         </ul>
